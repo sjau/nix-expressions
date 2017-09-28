@@ -4,7 +4,7 @@ stdenv.mkDerivation {
 
     src = fetchurl {
         url = "https://raw.githubusercontent.com/sjau/bash-stuff/master/getTechDetails";
-        sha256 = "1z26qjhbiyz33rm7mp8ycgl5ka0v3v5lv5i5v0b5mx35arvx2zzy";
+        sha256 = "0p0jjspgv3wlab9c3lz8g46hhyjf7gg0k41w32pxqs2xqcyhfwva";
     };
 
     installPhase = ''
