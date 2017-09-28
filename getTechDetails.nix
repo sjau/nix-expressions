@@ -1,14 +1,18 @@
-{stdenv, fetchurl }:
-stdenv.mkDerivation {
-    name = "getTechDetails-master";
+{ stdenv, writeScriptBin }:
 
-    src = fetchurl {
-        url = "https://raw.githubusercontent.com/sjau/bash-stuff/master/getTechDetails";
-        sha256 = "0p0jjspgv3wlab9c3lz8g46hhyjf7gg0k41w32pxqs2xqcyhfwva";
-    };
+writeScriptBin "getTechDetails" ''
+  #!${stdenv.shell}
 
-    installPhase = ''
-        mkdir -p $out/bin
-        cp -n * $out/bin
-    '';
-}
+  # Small script to get the required technical details
+  # when filing a bug report against NixOS
+
+  nixosVer=$(nixos-version)
+  nixosEnv=$(nix-env --version)
+  nixosPkgs=$(nix-instantiate --eval '<nixpkgs>' -A lib.nixpkgsVersion)
+  nixosSand=$(grep build-use-sandbox /etc/nix/nix.conf)
+
+  printf '%s\n\n`%s`\n\n' '* System: (NixOS: `nixos-version`, Ubuntu/Fedora: `lsb_release -a`, ...)'            "''${nixosVer}"
+  printf '%s\n\n`%s`\n\n' '* Nix version: (run `nix-env --version`)'                                            "''${nixosEnv}"
+  printf '%s\n\n`%s`\n\n' '* Nixpkgs version: (run `nix-instantiate --eval "<nixpkgs>" -A lib.nixpkgsVersion`)' "''${nixosPkgs}"
+  printf '%s\n\n`%s`\n'   '* Sandboxing enabled: (run `grep build-use-sandbox /etc/nix/nix.conf`)'              "''${nixosSand}"
+''
