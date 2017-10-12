@@ -1,0 +1,79 @@
+#!/usr/bin/env bash
+
+set -e
+
+getDevice() {
+    read -r -e -p "Enter the path to the file: " -i "/dev/sdd" rootDev
+}
+
+getBootSize() {
+    read -r -e -p "Enter the size of the boot partition (in MB): " -i "500" bootSize
+    bootSectors=$((bootSize * 2048))
+}
+
+getPoolName() {
+    read -r -e -p "Enter the Poolname for ZFS: " -i "tank" zfsPool
+}
+
+doInstall() {
+    # Turn off LVM
+    vgchange -a n
+    # Remove partition info
+    dd if="/dev/zero" of="${rootDev}" bs=512 count=10000
+    # Do the partitioning
+    sfdisk -f "${rootDev}" << EOF
+        label: dos
+        device: ${rootDev}
+        unit: sectors
+
+        ${rootDev}1 : start=2048, size=${bootSectors}, type=83, bootable
+        ${rootDev}2 : type=83
+EOF
+    # Create Filesystems
+    mkfs.ext4 "${rootDev}1" -L "NIXOS_BOOT"
+    zpool create -o ashift=12 -o altroot="/mnt" "${zfsPool}" "${rootDev}2"
+    zfs create -o encryption=aes-256-gcm -o keyformat=passphrase -o mountpoint=none -o atime=off ${zfsPool}/encZFS
+    zfs create -o mountpoint=legacy -o com.sun:auto-snapshot=true "${zfsPool}/encZFS/Nixos"
+    zfs create -o mountpoint=legacy -o com.sun:auto-snapshot=true "${zfsPool}/encZFS/Media"
+    zfs create -o mountpoint=legacy -o com.sun:auto-snapshot=true "${zfsPool}/encZFS/VMs"
+    # Enable compression on Nixos dataset
+    zfs set compression=lz4 ${zfsPool}/encZFS/Nixos
+    # Disable some snapshots in Media dataset
+    zfs set com.sun:auto-snapshot:frequent=false ${zfsPool}/encZFS/Media
+    zfs set com.sun:auto-snapshot:daily=false ${zfsPool}/encZFS/Media
+    zfs set com.sun:auto-snapshot:weekly=false ${zfsPool}/encZFS/Media
+    zfs set com.sun:auto-snapshot:monthly=false ${zfsPool}/encZFS/Media
+    # Mount root to /mnt
+    mkdir -p "/mnt"
+    mount -t zfs "${zfsPool}/encZFS/Nixos" "/mnt"
+    # Create more mountpoints
+    mkdir -p "/mnt/boot"
+    mkdir -p "/mnt/root"
+    chmod 0700 "/mnt/root"
+    mkdir -p "/mnt/mnt/encZFS/"{Media,VMs}
+    mount -t zfs "${zfsPool}/encZFS/Media" "/mnt/mnt/encZFS/Media"
+    mount -t zfs "${zfsPool}/encZFS/VMs" "/mnt/mnt/encZFS/VMs"
+    mount -t ext4 "/dev/sda1" "/mnt/boot"
+    # Generate default nixos configs
+    nixos-generate-config --root "/mnt/"
+    # Replace generation configuration.nix with default custom one
+    cp -f "/root/min_conf.nix" "/mnt/etc/nixos/configuration.nix"
+    # Put .tmux.conf onto /mnt/root
+    cp "/root/.tmux.conf" "/mnt/root/.tmux.conf"
+    chmod 0644 "/mnt/root/.tmux.conf"
+    # Put readme.txt into /mnt/root
+    printf '%s\n' "Run the 'fullInstall' script to restore your /root folder and setup the rest of Nixos" > "/mnt/root/readme.txt"
+    # Put fullInstall into /mnt/root
+    cp -a "/root/.fullInstall" "/mnt/root/fullInstall"
+    # Run Nixos Installer
+    nixos-install
+}
+
+getDevice
+getBootSize
+getPoolName
+
+doInstall
+
+printf '%s\n\n' "Minimal installation done - you can reboot now into the new system."
+printf '%s\n' "After rebooting, don't forget to pull the configuration.nix from github. See the /root/readme.txt then for more info."

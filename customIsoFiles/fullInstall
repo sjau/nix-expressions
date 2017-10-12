@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+set -e
+
+# Restore /root because it contains required files for nixos installation
+rsync -avp root@servi.home.sjau.ch:/mnt/eeePC/current/root /
+
+# Get latest configuration.nix from Github
+curl -o "/etc/nixos/configuration.nix" https://raw.githubusercontent.com/sjau/nixos/master/configuration.nix
+
+# Switch channel
+nix-channel --add https://nixos.org/channels/nixos-unstable-small nixos
+
+# Rebuild Nixos
+nixos-rebuild boot --upgrade
