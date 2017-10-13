@@ -43,6 +43,9 @@ EOF
     zfs set com.sun:auto-snapshot:daily=false ${zfsPool}/encZFS/Media
     zfs set com.sun:auto-snapshot:weekly=false ${zfsPool}/encZFS/Media
     zfs set com.sun:auto-snapshot:monthly=false ${zfsPool}/encZFS/Media
+    # Disable some snapshots in VMs dataset
+    zfs set com.sun:auto-snapshot:weekly=false ${zfsPool}/encZFS/VMs
+    zfs set com.sun:auto-snapshot:monthly=false ${zfsPool}/encZFS/VMs
     # Mount root to /mnt
     mkdir -p "/mnt"
     mount -t zfs "${zfsPool}/encZFS/Nixos" "/mnt"
