@@ -9,9 +9,9 @@ writeScriptBin "stopResilver" ''
     # Setting the external devices to "OFFLINE" causes faster re-silvering (maybe)
 
     poolName="$1"
-    read -r -a device <<<"$2"
+    IFS=', ' read -r -a devices <<< "$2"
 
-    for i in "$device[@]"; do
+    for i in ''${devices[@]}; do
         poolStatus=$(zpool status | grep "$i")
         if [[ -b "/dev/disk/by-id/$i" && "$poolStatus" == *"ONLINE"* ]]; then
             # Device exists on the system and is in zpool; set it to offline
