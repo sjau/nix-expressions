@@ -11,9 +11,9 @@ writeScriptBin "autoResilver" ''
     poolName="$1"
     device="$2"
 
-    poolStatus=$(zpool status | grep "$i")
-    if [[ -b "/dev/disk/by-id/$i" && ( "$poolStatus" == *"UNAVAIL"* || "$poolStatus" == *"OFFLINE"* ) ]]; then
+    poolStatus=$(zpool status | grep "$device")
+    if [[ -b "/dev/disk/by-id/$device" && ( "$poolStatus" == *"UNAVAIL"* || "$poolStatus" == *"OFFLINE"* ) ]]; then
         # Device exists on the system, but is not in zpool; set it to online
-        zpool online "$poolName" "/dev/disk/by-id/$i"
+        zpool online "$poolName" "/dev/disk/by-id/$device"
     fi
 ''
