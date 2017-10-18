@@ -6,7 +6,7 @@ writeScriptBin "autoResilver" ''
     # Small script to auto-resilver devices that belong to pool
     # Usage: autoResilver "pool name" "device id"
     # You could add a system cron job like
-    #     "*/5 * * * autoResilver 'tank' 'usb-TOSHIBA_External_USB_3.0_20170612010552F-0:0'"
+    #     "*/5 * * * root autoResilver 'tank' 'usb-TOSHIBA_External_USB_3.0_20170612010552F-0:0'"
 
     poolName="$1"
     device="$2"
