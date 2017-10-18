@@ -38,6 +38,8 @@ EOF
     zfs create -o mountpoint=legacy -o com.sun:auto-snapshot=true "${zfsPool}/encZFS/VMs"
     # Enable compression on Nixos dataset
     zfs set compression=lz4 ${zfsPool}/encZFS/Nixos
+    # Disable some snapshots in Nixos dataset
+    zfs set com.sun:auto-snapshot:monthly=false ${zfsPool}/encZFS/Nixos
     # Disable some snapshots in Media dataset
     zfs set com.sun:auto-snapshot:frequent=false ${zfsPool}/encZFS/Media
     zfs set com.sun:auto-snapshot:daily=false ${zfsPool}/encZFS/Media
