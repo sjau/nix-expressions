@@ -1,18 +1,19 @@
-{ stdenv, fetchurl, fetchpatch, pkgconfig, libtool, autoconf, automake, cppunit, ncurses, libsigcxx, curl, zlib, openssl, xmlrpc_c, callPackage
-    , python27, python27Packages.virtualenv, python27Packages.pip, python27Packages.setuptools}:
+{ stdenv, fetchurl, fetchpatch, pkgconfig, libtool, autoconf, automake, cppunit, ncurses, libsigcxx, curl, zlib, openssl, xmlrpc_c, callPackage }:
 
 
 # Build Script:     https://github.com/pyroscope/rtorrent-ps/blob/master/build.sh
 # Main Repo:        https://github.com/pyroscope/rtorrent-ps
 # Docs:             https://rtorrent-ps.readthedocs.io/en/latest/install.html#build-from-source
 # Arch Build:       https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=rtorrent-ps
-# The Python packages are needed for the PyroScope installation:
-#       https://rtorrent-ps.readthedocs.io/en/latest/install.html#pyroscope-installation
+# The following python packages are needed for the PyroScope installation, see https://rtorrent-ps.readthedocs.io/en/latest/install.html#pyroscope-installation
+#    python27, python27Packages.virtualenv, python27Packages.pip, python27Packages.setuptools
+# Add them to your configuration.nix
 # For finishing the user inntallation do the PyroScop installation and then follow further the installation guide
 
 let
 
-    libtorrent-ps = callPackage /etc/nixos/libtorrent-ps.nix {};
+#    libtorrent-ps = callPackage /etc/nixos/libtorrent-ps.nix {};
+    libtorrent-ps = callPackage (builtins.fetchurl "https://raw.githubusercontent.com/sjau/nix-expressions/master/libtorrent-ps.nix") {};
 
     packageOverrides = pkgs: rec {
         xmlrpc_c = pkgs.stdenv.lib.overrideDerivation pkgs.xmlrpc_c (oldAttrs : {
@@ -120,4 +121,5 @@ stdenv.mkDerivation rec {
         maintainers = with maintainers; [ hyper_ch ];
     };
 }
+
 
