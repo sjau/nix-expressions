@@ -19,18 +19,3 @@ diff -crB rtorrent-0.9.6/src/ui/element_download_list.cc rtorrent-0.9.6-hyper_ch
     m_bindings['\x05'] = std::tr1::bind(&ElementDownloadList::receive_command, this,
                                         "f.multicall=,f.set_create_queued=0,f.set_resize_queued=0; print=\"Queued create/resize of files in torrent.\"");
 
-*** This applies a patch to make an easy filter for view1 and view2...
-*** To use it, do the following:
-***
-*** Add the following view modifications to your rtorrent.rc or according file in rtorrent.d/
-***
-***    # VIEW IGNORE PATCH
-***    view_filter = main,not=$d.get_ignore_commands=
-***    view_filter = name,d.get_ignore_commands=
-***
-*** Once applied, on a given torrent, you can set it to ignore: shift + i
-*** The "double hammer" icon changes to a circle - signaling the torrent is ignored
-*** At next view update, that torrent won't be displayed in view1 anymore but only in view2
-***
-*** I use this to make simple decisions to decied what should be shared/kept forever (view2)
-*** and what should I delete after some time (view1)
