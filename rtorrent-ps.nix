@@ -1,19 +1,16 @@
-{ stdenv, fetchurl, fetchpatch, pkgconfig, libtool, autoconf, automake, cppunit, ncurses, libsigcxx, curl, zlib, openssl, xmlrpc_c, callPackage }:
+{ stdenv, fetchurl, fetchpatch, pkgconfig, libtool, autoconf, automake, cppunit, ncurses, libsigcxx, curl, zlib, openssl, xmlrpc_c, callPackage, python27 }:
 
 
 # Build Script:     https://github.com/pyroscope/rtorrent-ps/blob/master/build.sh
 # Main Repo:        https://github.com/pyroscope/rtorrent-ps
 # Docs:             https://rtorrent-ps.readthedocs.io/en/latest/install.html#build-from-source
 # Arch Build:       https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=rtorrent-ps
-# The following python packages are needed for the PyroScope installation, see https://rtorrent-ps.readthedocs.io/en/latest/install.html#pyroscope-installation
-#    python27, python27Packages.virtualenv, python27Packages.pip, python27Packages.setuptools
-# Add them to your configuration.nix
-# For finishing the user inntallation do the PyroScop installation and then follow further the installation guide
-
+# The python packages are needed for the PyroScope installation
+# For finishing the user inntallation do the PyroScope installation and then follow further the installation guide
 
 # CUSTOM VIEW IGNORE FILTER PATCH
 # This applies a patch to make an easy filter torrents to only appear in view1 (main) or view2 (name).
-#Add the follwing to your rtorrent.rc or rtorrent.d/views.rc file (be sure to apply it before the sorting)
+# Add the follwing to your rtorrent.rc or rtorrent.d/views.rc file (be sure to apply it before the sorting)
 #
 #    # VIEW IGNORE PATCH
 #    view_filter = main,not=$d.get_ignore_commands=
@@ -22,7 +19,6 @@
 # Once applied, on a given torrent, you can change the ignore settings with shift + i --> after view update they will be put in either view1 or view2
 #
 # I use this to make simple decisions to decied what should be shared/kept forever (view2)
-# and what should I delete after some time (view1)
 
 let
 
@@ -81,7 +77,13 @@ stdenv.mkDerivation rec {
     '';
 
     nativeBuildInputs = [ pkgconfig ];
-    buildInputs = [ libtool autoconf automake cppunit libtorrent-ps ncurses curl zlib openssl xmlrpc_c libsigcxx ];
+    buildInputs = [ libtool autoconf automake cppunit libtorrent-ps ncurses curl zlib openssl xmlrpc_c libsigcxx
+        (python27.withPackages (pythonPackages: with pythonPackages; [
+            virtualenv
+            pip
+            setuptools
+        ]))
+    ];
 
     patchFlags = [ "-uNp1" ];
     patches = [
@@ -113,6 +115,8 @@ stdenv.mkDerivation rec {
                         sha256 = "1909mlb7bmhmp7kk3akgrc0d07y7l2xymw3jz5p7ldr4zv2078l7"; })
         (fetchpatch {   url    = "https://raw.githubusercontent.com/pyroscope/rtorrent-ps/master/patches/pyroscope.patch";
                         sha256 = "0gsgx4r4p8qjnyv0c61dgzx3xw6hh0z929pdn52jnv4pnfv4bqwd"; })
+        (fetchpatch  {  url    = "https://raw.githubusercontent.com/pyroscope/rtorrent-ps/master/patches/ui_pyroscope.patch";
+                        sha256 = "13jxl3chqfmw4a8xl3l51x13ssp109s8ivmiq46b8w4v16n84vzg"; })
         (fetchpatch {   url    = "https://raw.githubusercontent.com/sjau/nix-expressions/master/customPatches/rtorrent_view_ignore.patch";
                         sha256 = "13a3ac7dl60i1bigsn229yg3mn1iip481lky5bk6i0ki75mhc19c"; })
     ];
@@ -135,5 +139,3 @@ stdenv.mkDerivation rec {
         maintainers = with maintainers; [ hyper_ch ];
     };
 }
-
-
