@@ -19,6 +19,7 @@
 # Once applied, on a given torrent, you can change the ignore settings with shift + i --> after view update they will be put in either view1 or view2
 #
 # I use this to make simple decisions to decied what should be shared/kept forever (view2)
+# and what I should delete after some time (view1)
 
 let
 
