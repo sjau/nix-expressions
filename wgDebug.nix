@@ -4,7 +4,7 @@ writeScriptBin "wgDebug" ''
     #!${stdenv.shell}
 
     # Small script that cats the /etc/resolv.conf file to /tmp/resolv.boot
-    printf 'cat /etc/resolv.conf\n' >> "/tmp/wginfo.txt"
+    printf 'cat /etc/resolv.conf\n' > "/tmp/wginfo.txt"
     cat "/etc/resolv.conf" >> "/tmp/wginfo.txt"
     printf '\n\n\n' >> "/tmp/wginfo.txt"
     printf 'cat /etc/nsswitch\n' >> "/tmp/wginfo.txt"
