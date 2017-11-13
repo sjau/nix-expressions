@@ -78,8 +78,8 @@ stdenv.mkDerivation rec {
     '';
 
     nativeBuildInputs = [ pkgconfig ];
-    buildInputs = [ libtool autoconf automake cppunit libtorrent-ps ncurses curl zlib openssl xmlrpc_c libsigcxx
-        (python27.withPackages (pythonPackages: with pythonPackages; [
+    buildInputs = [ libtool autoconf automake cppunit libtorrent-ps ncurses curl zlib openssl xmlrpc_c libsigcxx ];
+    propagatedBuildInputs = [ (python27.withPackages (pythonPackages: with pythonPackages; [
             virtualenv
             pip
             setuptools
