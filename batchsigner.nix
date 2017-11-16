@@ -6,7 +6,6 @@ stdenv.mkDerivation rec {
 
     src = fetchzip {
         url = "https://www.e-service.admin.ch/wiki/download/attachments/35979898/suis-batchsigner-${lt_version}-bin.zip";
-#        url = "https://sjau.ch/suis-batchsigner-${lt_version}.zip";
         sha256 = "1f2rsdkn3axrfwvrlskrilbda4ssi3vh6pgfk5xvaakajsi4mrav";
         extraPostFetch = "chmod -R 755 $out";
     };
