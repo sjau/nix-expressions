@@ -1,4 +1,5 @@
 { stdenv, lib, qt5, sane-backends, makeWrapper, fetchurl }:
+
 stdenv.mkDerivation rec {
     name = "master-pdf-editor--${version}";
     version = "4.3.10";
@@ -40,6 +41,6 @@ stdenv.mkDerivation rec {
         homepage = https://code-industry.net/masterpdfeditor/;
         description = "a multifunctional PDF Editor";
         platforms = platforms.linux;
-        maintainers = [ your_name ];
+        maintainers = [ hyper_ch ];
     };
 }
