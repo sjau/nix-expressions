@@ -27,6 +27,8 @@ stdenv.mkDerivation rec {
             --replace "#!/bin/sh" "#!/usr/bin/env bash" \
             --replace "# export JAVA_HOME=/usr/lib/jvm/java-6-sun" "export JAVA_HOME=${jdk}      # export JAVA_HOME=/usr/lib/jvm/java-6-sun" \
             --replace "# export SIGNER_HOME=/opt/suis-batchsigner" "export SIGNER_HOME=$out    # export SIGNER_HOME=/opt/suis-batchsigner" \
+            --replace "# export SIGNER_HOME=/opt/suis-batchsigner" "export SIGNER_HOME=$out    # export SIGNER_HOME=/opt/suis-batchsigner" \
+            --replace "LOG4J_CONFIG=conf/log4j.properties" "LOG4J_CONFIG=/tmp/log4j.properties" \
             --replace 'lib/suis-batchsigner-1.6.3.jar:`cat bin/classpath_unix`' "$out/lib/*"
     '';
 
