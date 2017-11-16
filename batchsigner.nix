@@ -29,6 +29,8 @@ stdenv.mkDerivation rec {
             --replace "# export SIGNER_HOME=/opt/suis-batchsigner" "export SIGNER_HOME=$out    # export SIGNER_HOME=/opt/suis-batchsigner" \
             --replace "# export SIGNER_HOME=/opt/suis-batchsigner" "export SIGNER_HOME=$out    # export SIGNER_HOME=/opt/suis-batchsigner" \
             --replace 'lib/suis-batchsigner-1.6.3.jar:`cat bin/classpath_unix`' "$out/lib/*"
+        # Set batchsigner log to /tmp/suis-batchsigner.log - needs to be writeable
+        substituteInPlace \
             $out/conf/log4j.properties \
             --replace "log4j.appender.ROL.File=log/suis-batchsigner.log" "log4j.appender.ROL.File=/tmp/suis-batchsigner.log"
     '';
