@@ -16,5 +16,5 @@ writeScriptBin "getTechDetails" ''
 #    printf '%s\n\n`%s`\n\n' '* Nix version: (run `nix-env --version`)'                                            "''${nixosEnv}"
 #    printf '%s\n\n`%s`\n\n' '* Nixpkgs version: (run `nix-instantiate --eval "<nixpkgs>" -A lib.nixpkgsVersion`)' "''${nixosPkgs}"
 #    printf '%s\n\n`%s`\n'   '* Sandboxing enabled: (run `grep build-use-sandbox /etc/nix/nix.conf`)'              "''${nixosSand}"
-    printf '%s\n\n'          "${nixInfo}"
+    printf '%s\n\n'          "''${nixInfo}"
 ''
