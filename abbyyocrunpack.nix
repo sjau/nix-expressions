@@ -1,6 +1,6 @@
 { stdenv, writeScriptBin, nix-info }:
 
-writeScriptBin "getTechDetails" ''
+writeScriptBin "abbyyocrunpack" ''
     #!${stdenv.shell}
 
     filesizes=$( grep "filesizes" "$1" | head -1)
