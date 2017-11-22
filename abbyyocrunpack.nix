@@ -4,8 +4,8 @@ writeScriptBin "abbyyocrunpack" ''
     #!${stdenv.shell}
 
     filesizes=$( grep "filesizes" "$1" | head -1)
-    filesizes="${filesizes##*=}"
-    filesizes="${filesizes:1:-1}"
+    filesizes="''${filesizes##*=}"
+    filesizes="''${filesizes:1:-1}"
 
     while read -r h n off other; do
         offset="$off"
