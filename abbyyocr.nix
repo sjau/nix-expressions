@@ -1,22 +1,22 @@
 { stdenv, lib, fetchurl }:
 
+let
+
+    abbyyocrunpack = callPackage (builtins.fetchurl "https://raw.githubusercontent.com/sjau/nix-expressions/master/abbyyocrunpack.nix") {};
+
+in
+
 stdenv.mkDerivation rec {
     name = "abbyyocr-";
     lt_version = "11.1.14.707470";
 
     src = fetchurl {
         url = "http://ocr4linux.com/_media/abbyyocr.${lt_version}.tar.gz";
-        sha256 = "0000000000000000000000000000000000000000000000000000";
+        sha256 = "1zhsxxxbm0hhvf380zv0lw6sk5sysv9xf4wmm3647qfawn1bkra3";
     };
 
     unpackCmd = ''
-        tar xzf "$src"
-        # The install script is contained in the unpacked .run file; so extract it
-        while IFS= read -r line; do
-            [[ $line = *[![:ascii:]]* ]] && break;
-            printf '%s\n' "$line" >> "install.sh";
-        done < "abbyyocr.run"
-        chmod 0755 "install.sh"
+        abbyyocrunpack "$src"
     '';
 
     buildPhase = ":";       # nothing to build
@@ -29,14 +29,6 @@ stdenv.mkDerivation rec {
         substituteInPlace \
             $out/bin/batchsigner.sh \
             --replace "#!/bin/sh" "#!/usr/bin/env bash" \
-            --replace "# export JAVA_HOME=/usr/lib/jvm/java-6-sun" "export JAVA_HOME=${jdk}      # export JAVA_HOME=/usr/lib/jvm/java-6-sun" \
-            --replace "# export SIGNER_HOME=/opt/suis-batchsigner" "export SIGNER_HOME=$out    # export SIGNER_HOME=/opt/suis-batchsigner" \
-            --replace "# export SIGNER_HOME=/opt/suis-batchsigner" "export SIGNER_HOME=$out    # export SIGNER_HOME=/opt/suis-batchsigner" \
-            --replace 'lib/suis-batchsigner-1.6.3.jar:`cat bin/classpath_unix`' "$out/lib/*"
-        # Set batchsigner log to /tmp/suis-batchsigner.log - needs to be writeable
-        substituteInPlace \
-            $out/conf/log4j.properties \
-            --replace "log4j.appender.ROL.File=log/suis-batchsigner.log" "log4j.appender.ROL.File=/tmp/suis-batchsigner.log"
     '';
 
     meta = with stdenv.lib; {
