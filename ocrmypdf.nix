@@ -4,9 +4,9 @@ with python3.pkgs;
 
 let
 
-  ruffus = callPackage (builtins.fetchurl "https://raw.githubusercontent.com/sjau/nix-expressions/master/ruffus.nix") {});
-  img2pdf = callPackage (builtins.fetchurl "https://raw.githubusercontent.com/sjau/nix-expressions/master/img2pdf.nix") {});
-  pytest-helpers-namespace = callPackage (builtins.fetchurl "https://raw.githubusercontent.com/sjau/nix-expressions/master/pytest_helpers_namespace.nix") {});
+  ruffus = callPackage (builtins.fetchurl "https://raw.githubusercontent.com/sjau/nix-expressions/master/ruffus.nix") {};
+  img2pdf = callPackage (builtins.fetchurl "https://raw.githubusercontent.com/sjau/nix-expressions/master/img2pdf.nix") {};
+  pytest-helpers-namespace = callPackage (builtins.fetchurl "https://raw.githubusercontent.com/sjau/nix-expressions/master/pytest_helpers_namespace.nix") {};
 
 in
 
