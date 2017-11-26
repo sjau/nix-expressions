@@ -4,7 +4,7 @@ with python3.pkgs;
 
 let
 
-    pdfrw = callPackage (builtins.fetchurl "https://raw.githubusercontent.com/sjau/nix-expressions/master/pdfrw.nix" {} );
+    pdfrw = callPackage (builtins.fetchurl "https://raw.githubusercontent.com/sjau/nix-expressions/master/pdfrw.nix") {};
 
 in
 
