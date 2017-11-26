@@ -1,4 +1,4 @@
-{ stdenv, lib, buildPythonPackage, fetchPypi, isPyPy, python3, callPackage, fetchurl }:
+{ stdenv, lib, buildPythonPackage, fetchPypi, isPyPy, python3, callPackage }:
 
 with python3.pkgs;
 
