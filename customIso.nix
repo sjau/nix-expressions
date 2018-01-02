@@ -8,6 +8,9 @@
         ./customIsoFiles/files.nix
     ];
 
+    # Grub also needs zfs
+    boot.loader.grub.zfsSupport = true;
+
     # Enable ZFS (unstable needed for native zfs encryption)
     boot.supportedFilesystems = [ "zfs" ];
     boot.zfs.enableUnstable = true;

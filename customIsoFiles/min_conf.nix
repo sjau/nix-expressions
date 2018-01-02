@@ -16,6 +16,7 @@
     # Use the GRUB 2 boot loader.
     boot.loader.grub.enable = true;
     boot.loader.grub.version = 2;
+    boot.loader.grub.zfsSupport = true;
     boot.loader.grub.device = "/dev/sda"; # or "nodev" for efi only
 
     # Trust hydra. Needed for one-click installations.
