@@ -14,7 +14,7 @@ writeScriptBin "wgRouteAdd" ''
 
     # Figure out current routing
     while IFS= read a b c d e f; do
-        if [[ $a == "default" && $b == "via"]]; then
+        if [[ $a == "default" && $b == "via" ]]; then
             #ip route add 81.6.36.24/32 via 10.0.2.0 dev ens3
             printf "%s\n" "ip route add ''${wgAddr}/32 via ''${c} dev ''${e}" >> "/tmp/wgRouteAdd.txt"
         done
