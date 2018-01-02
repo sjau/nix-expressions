@@ -23,7 +23,7 @@ writeScriptBin "wgRouteAdd" ''
     # Push Nameserver, if provided
     # Param2 = new namserver
     # Param3 = wg interface name
-    if [[ -z $2 && -z $3 ]]; then
+    if [[ ! -z $2 && ! -z $3 ]]; then
         #printf "nameserver ''${newNS}" | resolvconf -a ''${3} -m 0
         printf "%s\n" "printf \"nameserver ''${newNS}\" | resolvconf -a ''${3} -m 0" >> "/tmp/wgRouteAdd.txt"
     fi
