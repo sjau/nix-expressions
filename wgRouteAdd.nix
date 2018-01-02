@@ -9,7 +9,7 @@ writeScriptBin "wgRouteAdd" ''
     # Param1 is domain of wg server with or without port; filtering needed
     wgServer="''${1%%.*}"
     wgAddr=$(getent hosts "''${wgServer}")
-    wgAddr="''${remoteIP%% *}"
+    wgAddr="''${wgAddr%% *}"
     printf "%s\n" "''${wgAddr}" > "/tmp/wgRouteAdd.txt"
 
     # Figure out current routing
