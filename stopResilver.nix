@@ -15,7 +15,7 @@ writeScriptBin "stopResilver" ''
         poolStatus=$(zpool status | grep "$i")
         if [[ -b "/dev/disk/by-id/$i" && "$poolStatus" == *"ONLINE"* ]]; then
             # Device exists on the system and is in zpool; set it to offline
-            zpool offline "$poolName" "/dev/disk/by-id/$i"
+            zpool offline "$poolName" "$i"
         fi
     done
 ''
