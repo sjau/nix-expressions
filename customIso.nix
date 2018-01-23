@@ -102,8 +102,8 @@
     environment.systemPackages = with pkgs; [
         cryptsetup
         htop
-        gparted
-        kate
+#        kate
+#        gparted
         tmux
     ];
 }
