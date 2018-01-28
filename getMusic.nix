@@ -1,6 +1,6 @@
 { stdenv, writeScriptBin, nix-info }:
 
-writeScriptBin "getTechDetails" ''
+writeScriptBin "getMusic" ''
     #!${stdenv.shell}
 
     # Small script to download
