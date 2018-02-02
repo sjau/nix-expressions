@@ -57,7 +57,7 @@
 
     # Provide networkmanager for easy wireless configuration.
     networking.networkmanager.enable = true;
-#    networking.wireless.enable = false;
+    networking.wireless.enable = false;
 
 
     # Time.
