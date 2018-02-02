@@ -19,6 +19,7 @@
     i18n = {
         consoleFont = "Lat2-Terminus16";
         consoleKeyMap = "sg-latin1";    # Swiss German keyboard layout
+#        consoleKeyMap = "uk";
         defaultLocale = "en_US.UTF-8";
     };
 
@@ -52,33 +53,33 @@
 
 
     # Start the X server by default.
-    services.xserver.autorun = false;
+#    services.xserver.autorun = false;
 
     # Provide networkmanager for easy wireless configuration.
     networking.networkmanager.enable = true;
-    networking.wireless.enable = false;
+#    networking.wireless.enable = false;
 
 
     # Time.
     time.timeZone = "Europe/Zurich";
 
     # State Version - mostly for bases
-    system.stateVersion = "17.09";
-    system.activationScripts.installerDesktop = let
-        desktopFile = pkgs.writeText "nixos-manual.desktop" ''
-        [Desktop Entry]
-        Version=1.0
-        Type=Application
-        Name=NixOS Manual
-        Exec=firefox ${config.system.build.manual.manual}/share/doc/nixos/index.html
-        Icon=text-html
-        '';
-    in ''
-        mkdir -p /root/Desktop
-        ln -sfT ${desktopFile} /root/Desktop/nixos-manual.desktop
-        ln -sfT ${pkgs.konsole}/share/applications/org.kde.konsole.desktop /root/Desktop/org.kde.konsole.desktop
-        ln -sfT ${pkgs.gparted}/share/applications/gparted.desktop /root/Desktop/gparted.desktop
-    '';
+    system.stateVersion = "18.03";
+#    system.activationScripts.installerDesktop = let
+#        desktopFile = pkgs.writeText "nixos-manual.desktop" ''
+#        [Desktop Entry]
+#        Version=1.0
+#        Type=Application
+#        Name=NixOS Manual
+#        Exec=firefox ${config.system.build.manual.manual}/share/doc/nixos/index.html
+#        Icon=text-html
+#        '';
+#    in ''
+#        mkdir -p /root/Desktop
+#        ln -sfT ${desktopFile} /root/Desktop/nixos-manual.desktop
+#        ln -sfT ${pkgs.konsole}/share/applications/org.kde.konsole.desktop /root/Desktop/org.kde.konsole.desktop
+#        ln -sfT ${pkgs.gparted}/share/applications/gparted.desktop /root/Desktop/gparted.desktop
+#    '';
 
     environment.files.root = {
       root = "/root";
