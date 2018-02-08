@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+set -e
+
+getDevice() {
+    read -r -e -p "Enter the path to the file: " -i "/dev/sda" rootDev
+}
+
+getBootSize() {
+    read -r -e -p "Enter the size of the boot partition (in MB): " -i "2000" bootSize
+    bootSectors=$((bootSize * 2048))
+}
+
+getPoolName() {
+    read -r -e -p "Enter the Poolname for ZFS: " -i "tankOnline" zfsPool
+}
+
+doInstall() {
+    # Turn off LVM
+    vgchange -a n
+    # Remove partition info
+    dd if="/dev/zero" of="${rootDev}" bs=512 count=10000
+    # Do the partitioning
+    sfdisk -f "${rootDev}" << EOF
+        label: dos
+        device: ${rootDev}
+        unit: sectors
+
+        ${rootDev}1 : start=2048, size=${bootSectors}, type=83, bootable
+        ${rootDev}2 : type=83
+EOF
+    # Create Filesystems
+    mkfs.ext4 "${rootDev}1" -L "NIXOS_BOOT"
+    zpool create -f -o ashift=12 -o altroot="/mnt" -O mountpoint=none -O compression=lz4 -O atime=off "${zfsPool}" "${rootDev}2"
+    zfs create -o mountpoint=legacy -o encryption=aes-256-gcm -o keyformat=passphrase "${zfsPool}/encZFS"
+    zfs create "${zfsPool}/encZFS/Nixos"
+    # Mount root to /mnt
+    mkdir -p "/mnt"
+    mount -t zfs "${zfsPool}/encZFS/Nixos" "/mnt"
+    # Create more mountpoints
+    mkdir -p "/mnt/boot"
+    mkdir -p "/mnt/root/.nixos"
+    chmod 0700 "/mnt/root"
+    mount -t ext4 "/dev/sda1" "/mnt/boot"
+    # Generate default nixos configs
+    nixos-generate-config --root "/mnt/"
+    # Replace generation configuration.nix with default custom one
+    curl -o "/mnt/etc/nixos/configuration.nix" "https://raw.githubusercontent.com/sjau/nix-expressions/master/customIsoFiles/online_net_minimal_enczfs_configuration.nix" || ( printf "%s\n" "Couldn't scp the configuration.nix. Quitting."; exit 1)
+    # Also get .tmux.conf file
+    scp root@servi.home.sjau.ch:/root/.tmux.conf "/mnt/root/.tmux.conf" || ( printf "%s\n" "Couldn't scp the .tmux.conf. Quitting."; exit 1)
+    # Change to unstable small channel due to zfs
+    nix-channel --add https://nixos.org/channels/nixos-unstable-small nixos
+    # Get Dropbear ECDSA
+    nix-shell -p dropbear --command "dropbearkey -t ecdsa -f /tmp/initrd-ssh-key"
+    cp "/tmp/initrd-ssh-key" "/mnt/root/.nixos/"
+    cp "/tmp/initrd-ssh-key" "/root/.nixos/"
+    # Run Nixos Installer
+    nixos-install
+}
+
+getDevice
+getBootSize
+getPoolName
+
+doInstall
+
+printf '%s\n\n' "Minimal installation done - you can reboot now into the new system."
+printf '%s\n\n' "Since it's encrypted, don't forget ssh -p2222 root@IP for unlocking."
