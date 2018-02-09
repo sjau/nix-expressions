@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 set -e
 
-# scp root@servi.home.sjau.ch:/root/nix-tests/kexec/result/tarball/nixos-system-x86_64-linux.tar.xz
+# scp root@servi.home.sjau.ch:/root/nix-tests/kexec/result/tarball/nixos-system-x86_64-linux.tar.xz /
+# apt-get install xz-utils
+# cd /
+# tar xf nixos-system-x86_64-linux.tar.xz
 
 getDevice() {
     read -r -e -p "Enter the path to the file: " -i "/dev/sda" rootDev
