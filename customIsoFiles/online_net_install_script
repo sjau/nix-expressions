@@ -36,7 +36,8 @@ EOF
     # Mount root to /mnt
     mkdir -p "/mnt"
     mount -t zfs "${zfsPool}/encZFS/Nixos" "/mnt"
-    # Create more mountpoints
+    # Create more folders
+    mkdir -p "/root/.nixos"
     mkdir -p "/mnt/boot"
     mkdir -p "/mnt/root/.nixos"
     chmod 0700 "/mnt/root"

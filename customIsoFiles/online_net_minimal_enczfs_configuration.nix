@@ -25,7 +25,8 @@
             port = 2222;
             hostECDSAKey = /root/.nixos/initrd-ssh-key;
             authorizedKeys = [
-                ADD REAL KEYS
+                "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDAdnlsZ9itmyRQyvOtzTjLUFLXBD2nv5+GHKH7SjAVijL+bRE/+rcQYiAzsex7RDC/RxAf1scX1AvHzdrvlDSL/0BTC9/QEhU88yhR1tZMyN9bteIeR79SGPpSIq2Q+uJ2J4/OPenDs2wJSRUKUsBpWQvqkBw2PSL430fOAQ0/ndNgFtzFRTHs/sEAB1qjnVljbSRWGsh5H7uHqvmH9vPSfN1eDp8HMQTCvOkT7qAfkHG4rtjMvhe50RiOW0DvG6mlcvkkXJaxHoc2mhP9ufdzdSx8esZaxthxzyPq4uH/zA209sUrH8VgeOEVixeJaB6AgAW/TIvhZ24ps8zoGMkZIMDzhWkdOTBMAjEy8lkglPjhaLWcQD1daZQzynPPb5/uLcSr9YfOpPBTHoXldpylrrcdDGbQEVTmNZarO9oaZmM+kFnMmQQGt8qCCJao/1C9gsdc/ZgDOKN3y22HSNtrSAXrvbEyLxPGOoot60pMFSaJOM+xMSi6zuVz3wWXSbtrC/mATBURxEhwcsCCaTqzWYvrsOQTPtbbRwvbvedn0iEzRHFvfM+goupWlhx5YEl88T05nz4r3o4h106uFivxfZyJrybiFpRFhNtwO7qVw6V3pe8kegPhvrX9ZyKtyS8FSubNS1Ek2zR7kVjpKQKQ7h+Cn9YuhQNHHgYM1LCIVw== root@servi-nixos"
+                "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDozT/ErRrIheum+rVNQtX9VX/1WSPP3Kg4aMhvZfEX5Us37iddGVz8dWM+K7W4lSc998aR/j1QexR6TgfgFp8P8vtLusn4gz46Jbq7Z5q28+OWqRkTTRC73xB3PxTmRrBdef/K2BHQLtcVeB2zsiEvN1T+AwRbs6SI2DXEyfaq617EgqItQHq4ZBrcUpfJdHROP52VpCt7g9Y0c2DahzpY4nFgjoKv+jB4i0a9vvBFJfN9p2BXpc/xUdavf387yvTO2fxDLkQe0BNgQL0ngVWVtjrne4MVbwJbtdTh7W8hFJIGy5nmJt7kmkKWFHFXvABgZzusS97L5bdA3K2GfftBs0ZD2rCXRDZeBKxPqPPaL+ZQbpixWLnJ44DjEg4RaBVbyYbi+Cmm4qyYGxbupuPtLW9f2L1IG5yG26wJ/MUQtREj+qjN6vAaEvEDEiBLnoVyQegOZDiH6KUqgql9PK9WcVOOdrQmJtp5txFdyxS3+Y5UtU+1lMiPMi5PFO6g7o+SXdlEGbtQbOvYjUeMsdT0+fF9fisKTAvt8xJ2jFXJjedeXduLyYpn8nNT4IJG5EEKUgDQqjoszGZffyHkMepwHA6ZJBQeyOMFb1YvSjCL9DLEzxV4p5t7uHs1JjzT7M8zguo7fvFmHtiuFJ+GacWyfnCIfVx2+V11gtFQD2VYNw== hyper@subi"
              ];
         };
         postCommands = ''
