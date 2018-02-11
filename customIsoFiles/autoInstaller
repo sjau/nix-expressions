@@ -1,0 +1,346 @@
+#!/usr/bin/env bash
+
+# You can provide all the required information as argument on the console. Possible options are:
+# rootDev=/dev/sda                      --> The disk to install it
+# bootSize=1000                         --> Size of the boot partition; recommended at least 1 GB so that a full custom nixos-iso can be uploaded for troubleshooting
+# swapSize=2000                         --> Size of the swap partition - it won't be auto-activated in Nixos, you'll have to do that manually
+# zfsPool=tank                          --> Name of the zfs pool
+# zfsEnc=encZFS                         --> Name of the encrypted dataset (pool/encZFS)
+# zfsNixos=Nixos                        --> Name of the child-dataset in the encrypted dataset for the nixos installation (pool/encZFS/Nixos)
+# ifaceKernel=e1000e                    --> Kernel module for the network interface; required for remote unlocking
+# nixosChannel=small                    --> Provide 'small' for using nixos-unstable-small channel; default is nixos-unstable
+# pubKey=z4...Nw== user@computer        --> Your ssh public key for remote unlocking
+# sshPort=2222                          --> Provide different port for the initrd dropbear ssh server for remote unlocking
+# nixosKeyboard=us                      --> Set your keyboard layout; default is US
+#
+# Provide them like: ./script "rootDev=/dev/sda" "bootSize=1000" "zfsPool=tank"
+#
+# You'll still be prompted for required but missing values. Some values have defaults assigned like keyboard layout = US
+
+#------------------------------------------------------------------------------#
+#                                                                              #
+#                              BELOW BE DRAGONS                                #
+#                                                                              #
+#------------------------------------------------------------------------------#
+
+# Parse the command line arguments and assign them to variables
+for arg; do
+    varName="${arg%%=*}"
+    varVal="${arg#*=}"
+    declare ${varName}="${varVal}"
+done
+
+# To make it look pretty
+red=$(tput setaf 1)
+green=$(tput setaf 2)
+yellow=$(tput setaf 3)
+reset=$(tput sgr0)
+
+_Info () {
+    printf '%sInfo:%s %s\n' "${yellow}" "${reset}" "${1}"
+}
+_Success () {
+    printf '%sSuccess:%s %s\n' "${green}" "${reset}" "${1}"
+}
+_Error () {
+    printf '%sError:%s %s\n' "${red}" "${reset}" "${1}"
+    exit 1
+}
+
+
+getDevice() {
+    if [[ -z "${rootDev}" ]]; then
+        printf "\n\n%s" ""
+        read -r -e -p "Enter the path to the disk: " -i "/dev/sda" rootDev
+    fi
+}
+
+getBootSize() {
+    if [[ -z "${bootSize}" ]]; then
+        printf "\n\n%s" ""
+        _Info "It's recommended to give at least 1GB space to /boot,"
+        _Info "so that you can also upload a full NixOS ISO to it for debugging if needed."
+        read -r -e -p "Enter the size of the boot partition (in MB; min. 100): " -i "1000" bootSize
+    fi
+    bootSectors=$((bootSize * 2048))
+}
+
+getSwapSize() {
+    if [[ -z "${swapSize}" ]]; then
+        printf "\n\n%s" ""
+        _Info "Enter the swap partition size. A size of '0' will not create a swap partition."
+        _Info "You'll have to setup the swap partition yourself. This script just will add a swap partition and mark it as such."
+        _Info "It won't actually create entries in the nixos configuration."
+        read -r -e -p "Enter the size of the swap partition (in MB): " -i "0" swapSize
+    fi
+    swapSectors=$((swapSize * 2048))
+}
+
+getPoolName() {
+    if [[ -z "${zfsPool}" ]]; then
+        printf "\n\n%s" ""
+        read -r -e -p "Enter the Poolname for ZFS: " -i "tank" zfsPool
+    fi
+}
+
+getEncName() {
+    if [[ -z "${zfsEnc}" ]]; then
+        printf "\n\n%s" ""
+        read -r -e -p "Enter the name for the encrypted dataset (${zfsPool}/... ): " -i "encZFS" zfsEnc
+    fi
+}
+
+getNixosName() {
+    if [[ -z "${zfsNixos}" ]]; then
+        printf "\n\n%s" ""
+        read -r -e -p "Enter the name for nixos dataset (${zfsPool}/${zfsEnc}/... ): " -i "Nixos" zfsNixos
+    fi
+}
+
+getInterfaceModule() {
+    if [[ -z "${ifaceKernel}" ]]; then
+        possIfaces=$(grep -i -A 2 -E 'ethernet|network' <(lspci -k))
+        printf "\n\n\n\n%s\n\n\n" "${possIfaces}"
+        _Info "In order to start the network interface in the initrd, the required kernel module needs to be present."
+        _Info "On kimsufi server it's likely 'e1000e', on online.net server 'igb'."
+        _Info "Check the above output for your networks kernel module."
+        read -r -e -p "Enter the network interface's kernel module: " -i "" ifaceKernel
+    fi
+}
+
+getChannel() {
+    if [[ -z "${nixosChannel}" ]]; then
+        printf "\n\n%s" ""
+        _Info "Currently encrypted zfs is only availabe on nixos-unstable or nixos-unstable-small."
+        _Info "Enter 'small' for nixos-unstable-small or leave empty for nixos-unstable."
+        read -r -e -p "Enter the channel you want to use: " -i "" nixosChannel
+    fi
+}
+
+getPubKey() {
+    if [[ -z "${pubKey}" ]]; then
+        printf "\n\n%s" ""
+        _Info "The public key is needed for the initrd to establish a ssh connection for unlocking the encrypted dataset."
+        _Info "During installation only one public key can be added, once installed, you can add more."
+        read -r -e -p "Enter your public key: " -i "" pubKey
+    fi
+}
+
+getPort() {
+    if [[ -z "${sshPort}" ]]; then
+        printf "\n\n%s" ""
+        _Info "For establishing the ssh connection to unlock the encrypted dataset a port is required (different from normal ssh)."
+        read -r -e -p "Enter the initrd ssh port: " -i "2222" sshPort
+    fi
+}
+
+getKeyboard() {
+    if [[ -z "${nixosKeyboard}" ]]; then
+        printf "\n\n%s" ""
+        read -r -e -p "Enter the keyboard you want to use (e.g. 'fr', 'uk', 'sg-latin1': " -i "" nixosKeyboard
+    fi
+}
+
+writeConfiguration() {
+    cat << EOF > "/tmp/configuration.nix"
+{ config, pkgs, ... }:
+
+{
+  imports = [ # Include the results of the hardware scan.
+    ./hardware-configuration.nix
+  ];
+
+  # Add more filesystems
+  boot.supportedFilesystems = [ "zfs" ];
+  boot.zfs.enableUnstable = true;
+
+  # Use the GRUB 2 boot loader.
+  boot.loader.grub.enable = true;
+  boot.loader.grub.version = 2;
+  boot.loader.grub.zfsSupport = true;
+  boot.loader.grub.device = "${rootDev}";
+
+  boot.kernelParams = [ "net.ifnames=0" ];
+
+  boot.initrd.network = {
+    enable = true;
+    ssh = {
+      enable = true;
+      port = ${sshPort};
+      hostECDSAKey = /root/.nixos/initrd-ssh-key;
+      authorizedKeys = [
+        "${pubKey}"
+      ];
+    };
+    postCommands = ''
+      echo "zfs load-key -a; killall zfs" >> /root/.profile
+    '';
+  };
+  boot.initrd.kernelModules = [ "${ifaceKernel}" ];
+
+  # Trust hydra. Needed for one-click installations.
+  nix.trustedBinaryCaches = [ "http://hydra.nixos.org" ];
+
+  # Setup networking
+  networking = {
+    hostName = "freshNixos"; # Define your hostname.
+    hostId = "aaaaaaaa";
+    useDHCP = true;
+  };
+
+  # Select internationalisation properties.
+  i18n = {
+    consoleFont = "Lat2-Terminus16";
+    consoleKeyMap = "${nixosKeyboard}";
+    defaultLocale = "en_US.UTF-8";
+  };
+
+  # Enable the OpenSSH daemon.
+  services.openssh = {
+    enable = true;
+    permitRootLogin = "yes";
+  };
+
+  # Enable ntp or rather timesyncd
+  services.timesyncd = {
+    enable = true;
+    servers = [ "0.ch.pool.ntp.org" "1.ch.pool.ntp.org" "2.ch.pool.ntp.org" "3.ch.pool.ntp.org" ];
+  };
+
+  # Time.
+  time.timeZone = "Europe/Zurich";
+
+  # Add the NixOS Manual on virtual console 8
+  services.nixosManual.showManual = true;
+
+  # The NixOS release to be compatible with for stateful data such as databases.
+  system.stateVersion = "18.03";
+
+  nixpkgs.config.allowUnfree = true;
+
+  # List packages installed in system profile.
+  environment.systemPackages = with pkgs; [
+    cryptsetup
+    curl
+    git
+  ];
+}
+EOF
+
+}
+
+doInstall() {
+    _Info "Doing the partitioning"
+    {
+        # Turn off LVM
+        vgchange -a n
+        # Remove partition info
+        dd if="/dev/zero" of="${rootDev}" bs=512 count=10000
+        # Do the partitioning
+        if [[ ${swapSize} -eq 0 ]]; then
+            rootPool="${rootDev}2"
+            sfdisk --wipe=always -f "${rootDev}" << EOF
+                label: dos
+                device: ${rootDev}
+                unit: sectors
+
+                ${rootDev}1 : start=2048, size=${bootSectors}, type=83, bootable
+                ${rootDev}2 : type=83
+EOF
+        else
+            rootPool="${rootDev}3"
+            sfdisk --wipe=always -f "${rootDev}" << EOF
+                label: dos
+                device: ${rootDev}
+                unit: sectors
+
+                ${rootDev}1 : start=2048, size=${bootSectors}, type=83, bootable
+                ${rootDev}2 : size=${swapSectors}, type=82
+                ${rootDev}3 : type=83
+EOF
+            mkswap -L swap "${rootDev}2"
+        fi
+    } && { _Success "Partitions created."; } || { _Error "Partitioning has failed."; }
+
+    # Create Filesystems
+    _Info "Creating Pool and Datasets"
+    {
+        mkfs.ext4 "${rootDev}1" -L "NIXOS_BOOT"
+        zpool create -f -o ashift=12 -o altroot="/mnt" -O mountpoint=none -O compression=lz4 -O atime=off "${zfsPool}" "${rootPool}"
+        zfs create -o mountpoint=legacy -o encryption=aes-256-gcm -o keyformat=passphrase "${zfsPool}/${zfsEnc}"
+        zfs create "${zfsPool}/${zfsEnc}/${zfsNixos}"
+    } && { _Success "Pool and Datasets created."; } || { zpool export ${zfsPool} &> /dev/null ; _Error "Couldn't create pool and datasets."; }
+    # Mount root to /mnt
+    _Info "Mouting parititions etc."
+    {
+        mkdir -p "/mnt"
+        mount -t zfs "${zfsPool}/${zfsEnc}/${zfsNixos}" "/mnt"
+        # Create more folders
+        mkdir -p "/root/.nixos"         # Needed for the ECDSA Key during installation
+        mkdir -p "/mnt/boot"
+        mkdir -p "/mnt/root/.nixos"     # ECDSA key will be stored here
+        chmod 0700 "/mnt/root"
+        mount -t ext4 "${rootDev}1" "/mnt/boot"
+    } && { _Success "Partitions mounted."; } ||  { umount "/mnt/boot" &> /dev/null ; umount "/mnt" &> /dev/null ; zpool export ${zfsPool} &> /dev/null ; _Error "Couldn't mount partitions."; }
+    # Generate default nixos configs
+    _Info "Generating Nixos Configs and setting channel"
+    {
+        nixos-generate-config --root "/mnt/"
+        # Replace default generated configuration.nix with our custom one
+        writeConfiguration
+        cp "/tmp/configuration.nix" "/mnt/etc/nixos/configuration.nix"
+        # Disable powermanagement in hardware-configuration.nix as it's defined elsewhere
+        pattern='powerManagement'
+        replace='#  powerManagement.cpuFreqGovernor = lib.mkDefault "ondemand";'
+        sed -i s/.*"${pattern}".*/"${replace}"/g "/mnt/etc/nixos/hardware-configuration.nix"
+        # Set channel
+        if [[ "${nixosChannel}" = "small" ]]; then
+            nix-channel --add https://nixos.org/channels/nixos-unstable-small nixos
+        else
+            nix-channel --add https://nixos.org/channels/nixos-unstable nixos
+        fi
+    } && { _Success "Configs created and channel set."; } ||  { umount "/mnt/boot" &> /dev/null ; umount "/mnt" &> /dev/null ; zpool export ${zfsPool} &> /dev/null ; _Error "Couldn't create configs and set channel"; }
+    # Create ECDSA-key for Dropbear
+    _Info "Creating ECDSA-key"
+    {
+        if [[ -f "/tmp/initrd-ssh-key" ]]; then
+            rm "/tmp/initrd-ssh-key"
+        fi
+        nix-shell -p dropbear --command "dropbearkey -t ecdsa -f /tmp/initrd-ssh-key"
+        cp "/tmp/initrd-ssh-key" "/mnt/root/.nixos/"
+        cp "/tmp/initrd-ssh-key" "/root/.nixos/"
+    } && { _Success "ECDSA-key created"; } || { umount "/mnt/boot" &> /dev/null ; umount "/mnt" &> /dev/null ; zpool export ${zfsPool} &> /dev/null ; _Error "Couldn't create ECDSA-Key"; }
+    # Run Nixos Installer
+    _Info "Running now the nixos-install command. This can take a while."
+    nixos-install && { umount "/mnt/boot"; umount "/mnt"; zpool export "${zfsPool}"; } || { umount "/mnt/boot"; umount "/mnt"; zpool export "${zfsPool}"; _Error "Installation was aborted."; }
+}
+
+getDevice
+getBootSize
+getSwapSize
+getPoolName
+getEncName
+getNixosName
+getInterfaceModule
+getChannel
+getKeyboard
+getPubKey
+getPort
+
+if [[ -z "${rootDev}" ]]; then printf "\n\n\n%s\n" "You didn't set the disk. Abort."; exit 1; fi
+if [[ -z "${bootSize}" || ${bootSize} < 100 ]]; then printf "\n\n\n%s\n" "You didn't set the size for the boot partition. Abort."; exit 1; fi
+if [[ -z "${swapSize}" ]]; then printf "\n\n\n%s\n" "You didn't set the size for the swap partition. Abort."; exit 1; fi
+if [[ -z "${zfsPool}" ]]; then printf "\n\n\n%s\n" "You didn't set a name for the zfs pool. Abort."; exit 1; fi
+if [[ -z "${zfsEnc}" ]]; then printf "\n\n\n%s\n" "You didn't set a name for the encrypted dataset. Abort."; exit 1; fi
+if [[ -z "${zfsNixos}" ]]; then printf "\n\n\n%s\n" "You didn't set a name for the nixos dataset. Abort."; exit 1; fi
+if [[ -z "${ifaceKernel}" ]]; then printf "\n\n\n%s\n" "You didn't provide the kernel module name for the interface. Abort."; exit 1; fi
+if [[ -z "${pubKey}" ]]; then printf "\n\n\n%s\n" "You didn't provide your public key. Abort."; exit 1; fi
+if [[ -z "${sshPort}" || ${sshPort} -eq 22 || ${sshPort} -eq 0 ]]; then sshPort="2222"; fi
+if [[ -z "${nixosKeyboard}" ]]; then nixosKeyboard="us"; fi
+
+doInstall
+
+printf "\n\n\n\n%s" ""
+_Success "Minimal installation done, the mounts umounted and the zfs pool exported - you can reboot now into the new system."
+printf "\n\n%s" ""
+_Success "Since it's encrypted, don't forget ssh -p${sshPort} root@server for unlocking."
