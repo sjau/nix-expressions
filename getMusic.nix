@@ -1,4 +1,4 @@
-{ stdenv, writeScriptBin, nix-info }:
+{ stdenv, writeScriptBin, youtube-dl }:
 
 writeScriptBin "getMusic" ''
     #!${stdenv.shell}
