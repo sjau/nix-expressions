@@ -26,8 +26,8 @@
     networking = {
         hostName = "freshNixos"; # Define your hostname.
         hostId = "bac8c473";
-        #  enable = true;  # Enables wireless. Disable when using network manager
-        networkmanager.enable = true;
+        # enable = true;  # Enables wireless. Disable when using network manager
+        # networkmanager.enable = true;
     };
 
     # Select internationalisation properties.
@@ -60,12 +60,12 @@
         set nowrap
         set tabstospaces
         set tabsize 4
-        set const
+        set constantshow
         # include /usr/share/nano/sh.nanorc
     '';
 
     # The NixOS release to be compatible with for stateful data such as databases.
-    system.stateVersion = "17.09";
+    system.nixos.stateVersion = "18.03";
 
     nixpkgs.config.allowUnfree = true;
 
@@ -74,8 +74,6 @@
         cryptsetup
         curl
         htop
-        gparted
-        kate
         tmux
     ];
 }
