@@ -55,6 +55,7 @@ EOF
     scp root@servi.home.sjau.ch:/root/.tmux.conf "/mnt/root/.tmux.conf" || ( printf "%s\n" "Couldn't scp the .tmux.conf. Quitting."; exit 1)
     # Change to unstable small channel due to zfs
     nix-channel --add https://nixos.org/channels/nixos-unstable-small nixos
+    nix-channel --update
     # Get Dropbear ECDSA
     nix-shell -p dropbear --command "dropbearkey -t ecdsa -f /tmp/initrd-ssh-key"
     cp "/tmp/initrd-ssh-key" "/mnt/root/.nixos/"
