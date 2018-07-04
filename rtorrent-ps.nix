@@ -48,7 +48,8 @@ stdenv.mkDerivation rec {
     commandPyroscope = fetchurl {
         name = "command_pyroscope.cc";
         url = "https://raw.githubusercontent.com/pyroscope/rtorrent-ps/master/patches/command_pyroscope.cc";
-        sha256 = "12n41ga57m1ybc7vza3ax21bm1cnzlsxm7dcpp6ay5aqd5ymg3r4";
+#        sha256 = "12n41ga57m1ybc7vza3ax21bm1cnzlsxm7dcpp6ay5aqd5ymg3r4";
+        sha256 = "1dalwl0sqyyf6vk1bd2sid4q3s5if2dq79kqdm5kd7wvh1zckivz";
     };
 
     uiccPyroscope = fetchurl {
