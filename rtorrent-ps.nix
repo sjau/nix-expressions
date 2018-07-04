@@ -90,7 +90,7 @@ stdenv.mkDerivation rec {
     patchFlags = [ "-uNp1" ];
     patches = [
         (fetchpatch {   url    = "https://raw.githubusercontent.com/pyroscope/rtorrent-ps/master/patches/ps-event-view_all.patch";
-                        sha256 = "1b6l11g6dlgym2gplaix1lk8q6rhv93j80f0qiirxk6p2hgqizq1"; })
+                        sha256 = "1z5hivf8dvc5zvkcgmwjhvhfsn4ak1mlqcn4j7bcd87wydh2an9n"; })
         (fetchpatch {   url    = "https://raw.githubusercontent.com/pyroscope/rtorrent-ps/master/patches/ps-fix-double-slash-319_all.patch";
                         sha256 = "131bs1yikwc3mq19kkr4k8bz72sny1p6rym1xhgqgsn2caw15x6v"; })
         (fetchpatch {   url    = "https://raw.githubusercontent.com/pyroscope/rtorrent-ps/master/patches/ps-fix-sort-started-stopped-views_all.patch";
