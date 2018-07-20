@@ -19,13 +19,13 @@ stdenv.mkDerivation rec {
 
     patchFlags = [ "-uNp1" ];
     patches = [
-        (fetchpatch {   url    = "https://raw.githubusercontent.com/pyroscope/rtorrent-ps/master/patches/lt-ps-honor_system_file_allocate_all.patch";
+        (fetchpatch {   url    = "https://raw.githubusercontent.com/pyroscope/rtorrent-ps/PS-1.1/patches/lt-ps-honor_system_file_allocate_all.patch";
                         sha256 = "1dd5zrm7qqkbx2rayfahsil7scca8lqzvq432c29vi97ddgh6f2m"; })
-        (fetchpatch {   url    = "https://raw.githubusercontent.com/pyroscope/rtorrent-ps/master/patches/lt-ps-log_open_file-reopen_all.patch";
+        (fetchpatch {   url    = "https://raw.githubusercontent.com/pyroscope/rtorrent-ps/PS-1.1/patches/lt-ps-log_open_file-reopen_all.patch";
                         sha256 = "1g0sx9ywdgcn4zw6kwk24px4k82hjqfinwn0sz0hf68q1ad5qlai"; })
-        (fetchpatch {   url    = "https://raw.githubusercontent.com/pyroscope/rtorrent-ps/master/patches/lt-open-ssl-1.1.patch";
+        (fetchpatch {   url    = "https://raw.githubusercontent.com/pyroscope/rtorrent-ps/PS-1.1/patches/lt-open-ssl-1.1.patch";
                         sha256 = "1wm9kr2y874hrdyc4wizp8bv4nwqy9yvirvpfbisw1qknvflzrsa"; })
-        (fetchpatch {   url    = "https://raw.githubusercontent.com/pyroscope/rtorrent-ps/master/patches/lt-base-cppunit-pkgconfig.patch";
+        (fetchpatch {   url    = "https://raw.githubusercontent.com/pyroscope/rtorrent-ps/PS-1.1/patches/lt-base-cppunit-pkgconfig.patch";
                         sha256 = "17z0nrhiiylzh73f1rzmbx7kbmc8d2vp3bwad5i3cgfyzwk0z5ya"; })
     ];
 
