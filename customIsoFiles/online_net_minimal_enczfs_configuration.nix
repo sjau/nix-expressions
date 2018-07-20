@@ -81,7 +81,7 @@
     '';
 
     # The NixOS release to be compatible with for stateful data such as databases.
-    system.nixos.stateVersion = "18.03";
+    system.nixos.stateVersion = "18.09";
 
     nixpkgs.config.allowUnfree = true;
 

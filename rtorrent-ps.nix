@@ -48,20 +48,19 @@ stdenv.mkDerivation rec {
     commandPyroscope = fetchurl {
         name = "command_pyroscope.cc";
         url = "https://raw.githubusercontent.com/pyroscope/rtorrent-ps/master/patches/command_pyroscope.cc";
-#        sha256 = "12n41ga57m1ybc7vza3ax21bm1cnzlsxm7dcpp6ay5aqd5ymg3r4";
         sha256 = "1dalwl0sqyyf6vk1bd2sid4q3s5if2dq79kqdm5kd7wvh1zckivz";
     };
 
     uiccPyroscope = fetchurl {
         name = "ui_pyroscope.cc";
         url = "https://raw.githubusercontent.com/pyroscope/rtorrent-ps/master/patches/ui_pyroscope.cc";
-        sha256 = "0r76ydspv5ywfd74qpw3ffjnx8j0skjbbb7mfgz6j36p188abb6s";
+        sha256 = "19p8vy24slwa4mzyja30gc3hnf6wqg2rjr8dbza5wy597av6l0yh";
     };
 
     uihPyroscope = fetchurl {
         name = "ui_pyroscope.h";
         url = "https://raw.githubusercontent.com/pyroscope/rtorrent-ps/master/patches/ui_pyroscope.h";
-        sha256 = "0x43ihsjhvpb2spnhm2zlhzv6pbkkqr8610aig2g0dhj4gn18w3n";
+        sha256 = "1d0i1p9mrd0bca663a39a2wr3kay2qs8xrfrp43a9mvr1xpskc4h";
     };
 
     unpackCmd = ''
