@@ -12,7 +12,7 @@ writeScriptBin "wgStartFix" ''
 
     for i in ''${interfaces[@]}; do
         if ! systemctl is-active --quiet wireguard-$i; then
-            wg link delete $i
+            ip link delete $i
             systemctl restart wireguard-$i
         fi
     done
