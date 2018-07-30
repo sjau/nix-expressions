@@ -54,7 +54,7 @@ stdenv.mkDerivation rec {
     uiccPyroscope = fetchurl {
         name = "ui_pyroscope.cc";
         url = "https://raw.githubusercontent.com/pyroscope/rtorrent-ps/master/patches/ui_pyroscope.cc";
-        sha256 = "19p8vy24slwa4mzyja30gc3hnf6wqg2rjr8dbza5wy597av6l0yh";
+        sha256 = "0jyai1ipg0c8hflfvdshr43ph9d0rkwx7d394n5z2yfsmlxpkdb8";
     };
 
     uihPyroscope = fetchurl {
