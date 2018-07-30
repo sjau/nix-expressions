@@ -12,11 +12,11 @@ writeScriptBin "checkVersion" ''
             n1="nixos-$curYear.09"
             n2="nixos-$curYear.03"
         elif [[ $curMonth -ge 3 ]]; then
-            n1="nixos-$curYear-03"
-            n2="nixos-$lastYear-09"
+            n1="nixos-$curYear.03"
+            n2="nixos-$lastYear.09"
         else
-            n1="nixos-$lastYear-09"
-            n2="nixos-$lastYear-03"
+            n1="nixos-$lastYear.09"
+            n2="nixos-$lastYear.03"
         fi
         printf "%s\n\n  %s\n  %s\n  %s\n  %s\n" "Select the desired channel:" "(1) nixos-unstable-small" "(2) nixos-unstable" "(3) $n1" "(4) $n2"
         read -r -e -p "Enter 1-4 for the channel to search: " -i "" channelNumber
