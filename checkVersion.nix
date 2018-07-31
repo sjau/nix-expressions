@@ -5,32 +5,23 @@ writeScriptBin "checkVersion" ''
 
     # Small script to check package version in given nix channel
     getChannel() {
-        curYear=$(date +"%y")
-        curMonth=$(date +"%-m")
-        lastYear=$((curYear - 1))
-        if [[ $curMonth -ge 9 ]]; then
-            n1="nixos-$curYear.09"
-            n2="nixos-$curYear.03"
-        elif [[ $curMonth -ge 3 ]]; then
-            n1="nixos-$curYear.03"
-            n2="nixos-$lastYear.09"
-        else
-            n1="nixos-$lastYear.09"
-            n2="nixos-$lastYear.03"
-        fi
-        printf "%s\n\n  %s\n  %s\n  %s\n  %s\n" "Select the desired channel:" "(1) nixos-unstable-small" "(2) nixos-unstable" "(3) $n1" "(4) $n2"
-        read -r -e -p "Enter 1-4 for the channel to search: " -i "" channelNumber
-        
-        case "$channelNumber" in
-            1)  channelName="nixos-unstable-small"
-                ;;
-            2)  channelName="nixos-unstable"
-                ;;
-            3)  channelName="$n1"
-                ;;
-            4)  channelName="$n2"
-                    ;;
-        esac
+        n=1
+        while read -r line; do
+        # Check if the line contains the substring "nixos-"
+        if [[ $line = *"nixos-"* ]]; then
+                # Cut everything after "</a>"
+                curStr="''${line%%</a>*}"
+                # Cut everything before the last ">"
+                curStr="''${curStr##*>}"
+                printf "  %s: %s\n" "$n" "$curStr"
+                # Build array to reference the correct string after selection
+                releaseArr[$n]="$curStr"
+                ((n++))
+            fi
+        done < <(curl -s https://nixos.org/channels/)
+
+        read -r -e -p "Enter 1-$n for the channel to search: " -i "" channelNumber
+        channelName=''${releaseArr[$channelNumber]}
     }
     
     getPackage() {
@@ -42,3 +33,4 @@ writeScriptBin "checkVersion" ''
 
     nix eval -f channel:$channelName $packageName.name
 ''
+
