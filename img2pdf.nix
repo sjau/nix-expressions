@@ -10,12 +10,12 @@ in
 
 buildPythonPackage rec {
   pname = "img2pdf";
-  version = "0.2.4";
+  version = "0.3.0";
   name = "${pname}-${version}";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "1bn9zzsmg4k41wmx1ldmj8a4yfj807p8r0a757lm9yrv7bx702ql";
+    sha256 = "1z11xh63acphmryj0x9ss7fsldknkq0x3kmg64m1fwzymc2vp0cd";
   };
 
   propagatedBuildInputs = [

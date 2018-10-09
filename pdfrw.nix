@@ -43,6 +43,8 @@ buildPythonPackage rec {
 
   buildInputs = [ pytest ];
 
+  doCheck = false;
+
   propagatedBuildInputs = [
     reportlab
     pycrypto
