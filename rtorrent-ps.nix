@@ -23,8 +23,8 @@
 
 let
 
-    libtorrent-ps = callPackage /home/hyper/Desktop/git-repos/nix-expressions/libtorrent-ps.nix {};
-#    libtorrent-ps = callPackage (builtins.fetchurl "https://raw.githubusercontent.com/sjau/nix-expressions/master/libtorrent-ps.nix") {};
+#    libtorrent-ps = callPackage /home/hyper/Desktop/git-repos/nix-expressions/libtorrent-ps.nix {};
+    libtorrent-ps = callPackage (builtins.fetchurl "https://raw.githubusercontent.com/sjau/nix-expressions/master/libtorrent-ps.nix") {};
 
     packageOverrides = pkgs: rec {
         xmlrpc_c = pkgs.stdenv.lib.overrideDerivation pkgs.xmlrpc_c (oldAttrs : {

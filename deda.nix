@@ -5,11 +5,11 @@ with python3.pkgs;
 
 buildPythonApplication rec {
   pname = "deda";
-  version = "1.0b3";
+  version = "2.0b1";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "0kx96mhm32qv7wpa423ximcm7f39shx75m37s39m445km57cccy8";
+    sha256 = "1nwf2damz3zvmxz5absfbwd8az4lcl9jlmlybvnjmdh2zxaq5kmq";
   };
 
   postPatch = ''
