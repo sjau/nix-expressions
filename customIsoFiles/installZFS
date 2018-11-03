@@ -31,23 +31,11 @@ doInstall() {
 EOF
     # Create Filesystems
     mkfs.ext4 "${rootDev}1" -L "NIXOS_BOOT"
-    zpool create -o ashift=12 -o altroot="/mnt" "${zfsPool}" "${rootDev}2"
-    zfs create -o encryption=aes-256-gcm -o keyformat=passphrase -o mountpoint=none -o atime=off ${zfsPool}/encZFS
-    zfs create -o mountpoint=legacy -o com.sun:auto-snapshot=true "${zfsPool}/encZFS/Nixos"
-    zfs create -o mountpoint=legacy -o com.sun:auto-snapshot=true "${zfsPool}/encZFS/Media"
-    zfs create -o mountpoint=legacy -o com.sun:auto-snapshot=true "${zfsPool}/encZFS/VMs"
-    # Enable compression on Nixos dataset
-    zfs set compression=lz4 ${zfsPool}/encZFS/Nixos
-    # Disable some snapshots in Nixos dataset
-    zfs set com.sun:auto-snapshot:monthly=false ${zfsPool}/encZFS/Nixos
-    # Disable some snapshots in Media dataset
-    zfs set com.sun:auto-snapshot:frequent=false ${zfsPool}/encZFS/Media
-    zfs set com.sun:auto-snapshot:daily=false ${zfsPool}/encZFS/Media
-    zfs set com.sun:auto-snapshot:weekly=false ${zfsPool}/encZFS/Media
-    zfs set com.sun:auto-snapshot:monthly=false ${zfsPool}/encZFS/Media
-    # Disable some snapshots in VMs dataset
-    zfs set com.sun:auto-snapshot:weekly=false ${zfsPool}/encZFS/VMs
-    zfs set com.sun:auto-snapshot:monthly=false ${zfsPool}/encZFS/VMs
+    zpool create -o ashift=12 -o altroot="/mnt" -O atime=on -O canmount=off -O compression=lz4 -O normalization=formD -O xattr=sa -O relatime=on "${zfsPool}" "${rootDev}2
+    zfs create -o encryption=aes-256-gcm -o keyformat=passphrase -o mountpoint=none ${zfsPool}/encZFS
+    zfs create -o mountpoint=legacy -o easysnap:hourly=720:100 "${zfsPool}/encZFS/Nixos"
+    zfs create -o mountpoint=legacy -o easysnap:hourly=720 "${zfsPool}/encZFS/Media"
+    zfs create -o mountpoint=legacy -o easysnap:hourly=720 "${zfsPool}/encZFS/VMs"
     # Mount root to /mnt
     mkdir -p "/mnt"
     mount -t zfs "${zfsPool}/encZFS/Nixos" "/mnt"
