@@ -34,7 +34,7 @@
             echo "zfs load-key -a; killall zfs" >> /root/.profile
         '';
     };
-    boot.initrd.kernelModules = [ "igb" ];
+    boot.initrd.kernelModules = [ "virtio_pci" ];
 
     # Trust hydra. Needed for one-click installations.
     nix.trustedBinaryCaches = [ "http://hydra.nixos.org" ];

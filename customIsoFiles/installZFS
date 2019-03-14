@@ -31,7 +31,7 @@ doInstall() {
 EOF
     # Create Filesystems
     mkfs.ext4 "${rootDev}1" -L "NIXOS_BOOT"
-    zpool create -o ashift=12 -o altroot="/mnt" -O atime=on -O canmount=off -O compression=lz4 -O normalization=formD -O xattr=sa -O relatime=on "${zfsPool}" "${rootDev}2
+    zpool create -f -o ashift=12 -o altroot="/mnt" -O mountpoint=none -O compression=lz4 -O atime=off -O xattr=sa -O acltype=posixacl -O normalization=formD -O relatime=on "${zfsPool}" "${rootDev}2"
     zfs create -o encryption=aes-256-gcm -o keyformat=passphrase -o mountpoint=none ${zfsPool}/encZFS
     zfs create -o mountpoint=legacy -o easysnap:hourly=720:100 "${zfsPool}/encZFS/Nixos"
     zfs create -o mountpoint=legacy -o easysnap:hourly=720 "${zfsPool}/encZFS/Media"

@@ -27,6 +27,7 @@
             authorizedKeys = [
                 "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDAdnlsZ9itmyRQyvOtzTjLUFLXBD2nv5+GHKH7SjAVijL+bRE/+rcQYiAzsex7RDC/RxAf1scX1AvHzdrvlDSL/0BTC9/QEhU88yhR1tZMyN9bteIeR79SGPpSIq2Q+uJ2J4/OPenDs2wJSRUKUsBpWQvqkBw2PSL430fOAQ0/ndNgFtzFRTHs/sEAB1qjnVljbSRWGsh5H7uHqvmH9vPSfN1eDp8HMQTCvOkT7qAfkHG4rtjMvhe50RiOW0DvG6mlcvkkXJaxHoc2mhP9ufdzdSx8esZaxthxzyPq4uH/zA209sUrH8VgeOEVixeJaB6AgAW/TIvhZ24ps8zoGMkZIMDzhWkdOTBMAjEy8lkglPjhaLWcQD1daZQzynPPb5/uLcSr9YfOpPBTHoXldpylrrcdDGbQEVTmNZarO9oaZmM+kFnMmQQGt8qCCJao/1C9gsdc/ZgDOKN3y22HSNtrSAXrvbEyLxPGOoot60pMFSaJOM+xMSi6zuVz3wWXSbtrC/mATBURxEhwcsCCaTqzWYvrsOQTPtbbRwvbvedn0iEzRHFvfM+goupWlhx5YEl88T05nz4r3o4h106uFivxfZyJrybiFpRFhNtwO7qVw6V3pe8kegPhvrX9ZyKtyS8FSubNS1Ek2zR7kVjpKQKQ7h+Cn9YuhQNHHgYM1LCIVw== root@servi-nixos"
                 "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDozT/ErRrIheum+rVNQtX9VX/1WSPP3Kg4aMhvZfEX5Us37iddGVz8dWM+K7W4lSc998aR/j1QexR6TgfgFp8P8vtLusn4gz46Jbq7Z5q28+OWqRkTTRC73xB3PxTmRrBdef/K2BHQLtcVeB2zsiEvN1T+AwRbs6SI2DXEyfaq617EgqItQHq4ZBrcUpfJdHROP52VpCt7g9Y0c2DahzpY4nFgjoKv+jB4i0a9vvBFJfN9p2BXpc/xUdavf387yvTO2fxDLkQe0BNgQL0ngVWVtjrne4MVbwJbtdTh7W8hFJIGy5nmJt7kmkKWFHFXvABgZzusS97L5bdA3K2GfftBs0ZD2rCXRDZeBKxPqPPaL+ZQbpixWLnJ44DjEg4RaBVbyYbi+Cmm4qyYGxbupuPtLW9f2L1IG5yG26wJ/MUQtREj+qjN6vAaEvEDEiBLnoVyQegOZDiH6KUqgql9PK9WcVOOdrQmJtp5txFdyxS3+Y5UtU+1lMiPMi5PFO6g7o+SXdlEGbtQbOvYjUeMsdT0+fF9fisKTAvt8xJ2jFXJjedeXduLyYpn8nNT4IJG5EEKUgDQqjoszGZffyHkMepwHA6ZJBQeyOMFb1YvSjCL9DLEzxV4p5t7uHs1JjzT7M8zguo7fvFmHtiuFJ+GacWyfnCIfVx2+V11gtFQD2VYNw== hyper@subi"
+                "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC3gyhngW3brbYEe+OTYqHlxQa3EhqqH4IN+iCcH8PPDw3pj+mrdMTiTYFsfKxz/q2GCpQmNSue/rmm51FjQGkAXTpvfvVDJ2cHK5e5t//1bnGxFj8lym/MQEQ4WgVbx9RSqU4iBQneXG4yhDBAD2sntrcF9vyOJNGg77Io5j807xjmsdK7vmNkbglREwkPaNQtKULbMCS2jE3UIQ09JOUioNSsYE5Q0kB8rTFVX42XZ4imdYh6rSiJxBF4eocXE4TBmiTLuSUOiI6vm0AuQjsSqfMSTBIQVkaYWdsjA4EDpCoeu+CmXf8l2ijhh/y1DsSz3NrlPB6qza5lviduAAqjtDVpOUrjDqcHaMkCCQGi8z0tlPAqlKJp0Fx2J5PR5J/4OuFARgOGaIm9Hi1KEcGV85J/59y/DNX1aj9A4WpUxJuvj8C7XiNB/nW2REpW3cp0uL/G0HO1sj3ujeFkJO02Jxr8Y+oYwzdLUw3jQhI4oIHqW2RO9zeKHmewzljrf0tPr9aFcJGyj/vhB8vDJS7WD8+k9ygi47NbTJ/PjkHssRWXwIRLBc5ieQvm+SlwL1/R+Aq1rdeKyNtf5BEDsnvYzaTUrQmGgCyOFb3OsrU0WC+LS3UK4+xNAhiAc3SyW/J5yRAIBHGBTY1dij4jV3kAxP51UgNJFuXyrKJIK4yGqQ== hyper@servi"
              ];
         };
         postCommands = ''
@@ -81,7 +82,7 @@
     '';
 
     # The NixOS release to be compatible with for stateful data such as databases.
-    system.nixos.stateVersion = "18.09";
+    system.stateVersion = "19.03";
 
     nixpkgs.config.allowUnfree = true;
 
@@ -92,5 +93,6 @@
         git
         htop
         tmux
+        mc
     ];
 }
