@@ -11,7 +11,7 @@ getDevice() {
 }
 
 getBootSize() {
-    read -r -e -p "Enter the size of the boot partition (in MB): " -i "2000" bootSize
+    read -r -e -p "Enter the size of the boot partition (in MB): " -i "1000" bootSize
     bootSectors=$((bootSize * 2048))
 }
 
@@ -50,7 +50,7 @@ EOF
     # Generate default nixos configs
     nixos-generate-config --root "/mnt/"
     # Replace generation configuration.nix with default custom one
-    curl -o "/mnt/etc/nixos/configuration.nix" "https://raw.githubusercontent.com/sjau/nix-expressions/master/customIsoFiles/kimsufi_net_minimal_enczfs_configuration.nix" || ( printf "%s\n" "Couldn't scp the configuration.nix. Quitting."; exit 1)
+    curl -o "/mnt/etc/nixos/configuration.nix" "https://raw.githubusercontent.com/sjau/nix-expressions/master/customIsoFiles/ovh_cloud_vps_minimal_enczfs_configuration.nix" || ( printf "%s\n" "Couldn't scp the configuration.nix. Quitting."; exit 1)
     # Also get .tmux.conf file
     scp root@servi.home.sjau.ch:/root/.tmux.conf "/mnt/root/.tmux.conf" || ( printf "%s\n" "Couldn't scp the .tmux.conf. Quitting."; exit 1)
     # Change to unstable small channel due to zfs

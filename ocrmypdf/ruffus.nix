@@ -2,12 +2,12 @@
 
 buildPythonPackage rec {
   pname = "ruffus";
-  version = "2.6.3";
+  version = "2.8.0";
   name = "${pname}-${version}";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "0qah7rzf9p1l8sj0z19lfyb9dqdwv9a9b4sybv8r2g810bc2i1yp";
+    sha256 = "1sdm9fhsm5jsgly1pz8kcksxl54ga0bjjc9axmi17lg2ipl7d7k0";
   };
 
   propagatedBuildInputs = [ ];
