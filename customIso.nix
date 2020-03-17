@@ -16,12 +16,9 @@
     boot.zfs.enableUnstable = true;
 
     # Select internationalisation properties.
-    i18n = {
-        consoleFont = "Lat2-Terminus16";
-        consoleKeyMap = "sg-latin1";    # Swiss German keyboard layout
-#        consoleKeyMap = "uk";
-        defaultLocale = "en_US.UTF-8";
-    };
+    console.font = "Lat2-Terminus16";
+    console.keyMap = "sg-latin1";    # Swiss German keyboard layout
+    i18n.defaultLocale = "de_CH.UTF-8";
 
 #    services.xserver = {
 #        enable = true;
@@ -64,7 +61,7 @@
     time.timeZone = "Europe/Zurich";
 
     # State Version - mostly for bases
-    system.stateVersion = "18.03";
+    system.stateVersion = "20.03";
 #    system.activationScripts.installerDesktop = let
 #        desktopFile = pkgs.writeText "nixos-manual.desktop" ''
 #        [Desktop Entry]
@@ -105,6 +102,7 @@
         htop
 #        kate
 #        gparted
+        rsync
         tmux
     ];
 }

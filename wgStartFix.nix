@@ -1,5 +1,7 @@
 { stdenv, writeScriptBin }:
 
+# This was fixed by https://github.com/NixOS/nixpkgs/pull/61971
+
 writeScriptBin "wgStartFix" ''
     #!${stdenv.shell}
 
