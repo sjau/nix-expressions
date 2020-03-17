@@ -18,9 +18,9 @@ writeScriptBin "stopResilver" ''
     for i in ''${devices[@]}; do
         poolStatus=$(zpool status)
         # Check if pool is being resilvered, if so, exit
-        [[ $poolStatus == *"currently being resilvered"* ]] && exit 0
+        [[ "$poolStatus" == *"currently being resilvered"* ]] && exit 0
         # Check if pool is being scrubbed, if so, exit
-        [[ $poolStatus == *"scrub in progress"* ]] && exit 0
+        [[ "$poolStatus" == *"scrub in progress"* ]] && exit 0
         # Check if device exists, if so, set it offline
         if [[ -b "/dev/disk/by-id/$i" ]] && zpool offline "$poolName" "$i"
         fi
