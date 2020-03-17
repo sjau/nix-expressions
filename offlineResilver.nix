@@ -1,6 +1,6 @@
 { stdenv, writeScriptBin }:
 
-writeScriptBin "stopResilver" ''
+writeScriptBin "offlineResilver" ''
     #!${stdenv.shell}
 
     # This script sets the mirrored devices to "OFFLINE" status.
