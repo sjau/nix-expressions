@@ -16,9 +16,9 @@ writeScriptBin "autoResilver" ''
         if [[ -b "/dev/disk/by-id/$i" && ( "$poolStatus" == *"UNAVAIL"* || "$poolStatus" == *"OFFLINE"* ) ]]; then
             # Check if there is a lockfile for this day to ensure it only happens once a day
             curDate=$(date +%F)
-            if [[ ! -f "/run/lock/autoresilver-$i-$curDate" ]]; then
+            if [[ ! -f "/run/lock/autoResilver-$i-$curDate.lock" ]]; then
                 # Device exists on the system, but is not in zpool and no lockfile; set it to online and create lockfile
-                zpool online "$poolName" "/dev/disk/by-id/$i" && touch "/run/lock/autoresilver-$i-$curDate"
+                zpool online "$poolName" "/dev/disk/by-id/$i" && touch "/run/lock/autoResilver-$i-$curDate.lock"
             fi
         fi
     done
