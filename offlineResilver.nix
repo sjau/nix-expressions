@@ -22,7 +22,6 @@ writeScriptBin "offlineResilver" ''
         # Check if pool is being scrubbed, if so, exit
         [[ "$poolStatus" == *"scrub in progress"* ]] && exit 0
         # Check if device exists, if so, set it offline
-        if [[ -b "/dev/disk/by-id/$i" ]] && zpool offline "$poolName" "$i"
-        fi
+        [[ -b "/dev/disk/by-id/$i" ]] && zpool offline "$poolName" "$i"
     done
 ''
