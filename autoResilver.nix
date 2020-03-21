@@ -15,10 +15,12 @@ writeScriptBin "autoResilver" ''
         poolStatus=$(zpool status | grep "$i")
         if [[ -b "/dev/disk/by-id/$i" && ( "$poolStatus" == *"UNAVAIL"* || "$poolStatus" == *"OFFLINE"* ) ]]; then
             # Check if there is a lockfile for this day to ensure it only happens once a day
-            curDate=$(date +%F)
-            if [[ ! -f "/run/lock/autoResilver-$i-$curDate.lock" ]]; then
+            if [[ ! -f "/run/lock/autoResilver-$i.lock" ]]; then
                 # Device exists on the system, but is not in zpool and no lockfile; set it to online and create lockfile
-                zpool online "$poolName" "/dev/disk/by-id/$i" && touch "/run/lock/autoResilver-$i-$curDate.lock"
+                zpool online "$poolName" "/dev/disk/by-id/$i" && touch "/run/lock/autoResilver-$i.lock"
+            else
+            # Check if file modification was more than 24h ago and delete it, if so
+                (($(date +"%s") - $(stat -c "%Y" "/run/lock/autoResilver-$i.lock") > 86400)) && rm "/run/lock/autoResilver-$i.lock"
             fi
         fi
     done
