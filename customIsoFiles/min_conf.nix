@@ -31,11 +31,9 @@
     };
 
     # Select internationalisation properties.
-    i18n = {
-        consoleFont = "Lat2-Terminus16";
-        consoleKeyMap = "sg-latin1";
-        defaultLocale = "en_US.UTF-8";
-    };
+    console.font = "Lat2-Terminus16";
+    console.keyMap = "sg-latin1";
+    i18n.defaultLocale = "en_US.UTF-8";
 
     # Enable the OpenSSH daemon.
     services.openssh = {
