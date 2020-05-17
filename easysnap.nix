@@ -8,7 +8,7 @@ stdenv.mkDerivation {
     owner = "sjau";
     repo = "easysnap";
     rev = "aa84cc24463b9907da457309d7a07924aad67a00";
-    sha256 = "1k7adqly3rja39mk2dwz1g4j3q0lig5lxawj6hadcc9qgha2yq00";
+    sha256 = "1rd4lrlk86ghxmjc037qndc7fxcp2v8rfvx7zn25n3lllmkchyy5";
   };
 
   installPhase = ''
