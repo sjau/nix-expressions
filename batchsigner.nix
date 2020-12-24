@@ -1,33 +1,35 @@
-{ stdenv, lib, fetchzip, jdk, bash, makeWrapper }:
+{ stdenv, lib, dos2unix, fetchurl, jdk, bash, makeWrapper }:
 
 stdenv.mkDerivation rec {
     name = "batchsigner-${lt_version}";
-    lt_version = "1.6.3";
+    lt_version = "1.8.0";
 
-    src = fetchzip {
-        url = "https://www.e-service.admin.ch/wiki/download/attachments/35979898/suis-batchsigner-${lt_version}-bin.zip";
-        sha256 = "1f2rsdkn3axrfwvrlskrilbda4ssi3vh6pgfk5xvaakajsi4mrav";
-        extraPostFetch = "chmod -R 755 $out";
+    src = fetchurl {
+        url = "https://www.sjau.ch/batchsigner/suis-${name}-bin_linux-x86-64.tar.gz";
+        sha256 = "1c1hlnmwh205pfdf2ifym2xag0a975f5cimnyamjgs6kwhbczq9b";
     };
 
     unpackCmd = ''
-        unzip "$src"
+        tar xz "$src"
     '';
 
     buildPhase = ":";       # nothing to build
+    nativeBuildInputs = [
+        dos2unix
+    ];
     installPhase = ''
         mkdir -p $out/{bin,conf,doc,examples,log,opt}
         cp -R conf doc examples lib log $out/
         cp -a bin/batchsigner.sh $out/bin/batchsigner.sh
+        dos2unix $out/bin/batchsigner.sh
         chmod 0755 $out/bin/batchsigner.sh
         # fix the /bin/bash and export JAVA_HOME in script
         substituteInPlace \
             $out/bin/batchsigner.sh \
             --replace "#!/bin/sh" "#!/usr/bin/env bash" \
-            --replace "# export JAVA_HOME=/usr/lib/jvm/java-6-sun" "export JAVA_HOME=${jdk}      # export JAVA_HOME=/usr/lib/jvm/java-6-sun" \
             --replace "# export SIGNER_HOME=/opt/suis-batchsigner" "export SIGNER_HOME=$out    # export SIGNER_HOME=/opt/suis-batchsigner" \
-            --replace "# export SIGNER_HOME=/opt/suis-batchsigner" "export SIGNER_HOME=$out    # export SIGNER_HOME=/opt/suis-batchsigner" \
-            --replace 'lib/suis-batchsigner-1.6.3.jar:`cat bin/classpath_unix`' "$out/lib/*"
+            --replace 'JAVA_HOME=$SIGNER_HOME/jre' "export JAVA_HOME=${jdk}      # export JAVA_HOME=/usr/lib/jvm/java-8-sun" \
+            --replace 'lib/suis-batchsigner-1.8.0.jar:`cat bin/classpath_unix`' "$out/lib/*"
         # Set batchsigner log to /tmp/suis-batchsigner.log - needs to be writeable
         substituteInPlace \
             $out/conf/log4j.properties \
@@ -42,4 +44,3 @@ stdenv.mkDerivation rec {
         maintainers = with maintainers; [ hyper_ch ];
     };
 }
-
