@@ -36,7 +36,7 @@ stdenv.mkDerivation rec {
             --replace "log4j.appender.ROL.File=log/suis-batchsigner.log" "log4j.appender.ROL.File=/tmp/suis-batchsigner.log"
     '';
 
-    meta = with stdenv.lib; {
+    meta = with lib; {
         homepage = "https://www.openegov.admin.ch/egov/de/home/produkte/signieren/batchsigner.html";
         description = "A Java tool to digitally sign documents in a non-interactive way.";
 
