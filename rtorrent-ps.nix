@@ -88,7 +88,7 @@ stdenv.mkDerivation rec {
                         sha256 = "sha256-NFvNaX2w4djkaeymGGuKFaJBteB7toXrw/yT5jXjvIE="; })
         (fetchpatch {   url    = "https://raw.githubusercontent.com/sjau/nix-expressions/master/rtorrent/0.9.8_ps-info-pane-is-default_all.patch";
                         sha256 = "sha256-8SV7a6JdpZ99l9w0AI2+2z3wr7KgHMS8AaJWBTnDJlY="; })
-        (fetchpatch {   url    = "https://raw.githubusercontent.com/sjau/nix-expressions/master/rtorrent/0.9.8_ps-issue-515_all.patch/patches/ps-issue-515_all.patch";
+        (fetchpatch {   url    = "https://raw.githubusercontent.com/sjau/nix-expressions/master/rtorrent/0.9.8_ps-issue-515_all.patch";
                         sha256 = "sha256-Aly9dPvfsUfOrrJk4tWR0xZM9IyfoKtlJ7olziUl284="; })
         (fetchpatch {   url    = "https://raw.githubusercontent.com/sjau/nix-expressions/master/rtorrent/0.9.8_ps-item-stats-human-sizes_all.patch";
                         sha256 = "sha256-ZarPhvJktO8nrBPhFvVmdRi9aNdoA23jhqlirRqtJBo="; })
@@ -122,7 +122,7 @@ stdenv.mkDerivation rec {
     ];
 
     passthru = {
-        inherit libtorrent;
+        inherit libtorrent-ps;
     };
 
     nativeBuildInputs = [
@@ -136,7 +136,7 @@ stdenv.mkDerivation rec {
         curl
         libsigcxx
         libtool
-        libtorrent
+        libtorrent-ps
         ncurses
         openssl
         xmlrpc_c
