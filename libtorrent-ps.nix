@@ -12,7 +12,7 @@
 }:
 
 stdenv.mkDerivation rec {
-    pname = "rakshasa-libtorrent";
+    pname = "libtorrent-ps-ch";
     version = "0.13.8";
 
     src = fetchFromGitHub {
