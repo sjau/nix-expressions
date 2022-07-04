@@ -1,144 +1,166 @@
-{ stdenv, fetchurl, fetchpatch, pkgconfig, libtool, autoconf, automake, cppunit, ncurses, libsigcxx, curl, zlib, openssl, xmlrpc_c, callPackage, python27 }:
+{ lib
+, stdenv
+, callPackage
+, fetchFromGitHub
+, fetchpatch
+, fetchurl
+, autoreconfHook
+, autoconf-archive
+, cppunit
+, curl
+, libsigcxx
+, libtool
+, ncurses
+, openssl
+, pkg-config
+, xmlrpc_c
+, zlib
+}:
 
-
-# Build Script:     https://github.com/pyroscope/rtorrent-ps/blob/master/build.sh
-# Main Repo:        https://github.com/pyroscope/rtorrent-ps
-# Docs:             https://rtorrent-ps.readthedocs.io/en/latest/install.html#build-from-source
-# Arch Build:       https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=rtorrent-ps
-# The python packages are needed for the PyroScope installation
+# Build Script:     https://github.com/chros73/rtorrent-ps-ch/blob/master/build.sh
+# Main Repo:        https://github.com/chros73/rtorrent-ps-ch/
+# Docs:             https://github.com/chros73/rtorrent-ps-ch/blob/master/README.rst
+# Compiling Guide:  https://github.com/chros73/rtorrent-ps-ch/blob/master/docs/DebianInstallFromSourceTheEasyWay.rst
+# The python packages are needed for PyroScope's pyrocore installation
 # For finishing the user inntallation do the PyroScope installation and then follow further the installation guide
 
 # CUSTOM VIEW IGNORE FILTER PATCH
 # This applies a patch to make an easy filter torrents to only appear in view1 (main) or view2 (name).
 # Add the follwing to your rtorrent.rc or rtorrent.d/views.rc file (be sure to apply it before the sorting)
 #
-#    # VIEW IGNORE PATCH
-#    view_filter = main,not=$d.get_ignore_commands=
-#    view_filter = name,d.get_ignore_commands=
+#    VIEW IGNORE PATCH
+#    view.filter = main,not=$d.ignore_commands=
+#    view.filter = name,d.ignore_commands=
 #
-# Once applied, on a given torrent, you can change the ignore settings with shift + i --> after view update they will be put in either view1 or view2
+# Once applied, on a given torrent, you can change the ignore settings with shift + i --> after the view update
+# (usually a few seconds) they will be put in either view1 or view2
 #
 # I use this to make simple decisions to decied what should be shared/kept forever (view2)
 # and what I should delete after some time (view1)
 
+
 let
-
-#    libtorrent-ps = callPackage /home/hyper/Desktop/git-repos/nix-expressions/libtorrent-ps.nix {};
     libtorrent-ps = callPackage (builtins.fetchurl "https://raw.githubusercontent.com/sjau/nix-expressions/master/libtorrent-ps.nix") {};
-
-    packageOverrides = pkgs: rec {
-        xmlrpc_c = pkgs.stdenv.lib.overrideDerivation pkgs.xmlrpc_c (oldAttrs : {
-            configureFlags = oldAttrs.configureFlags ++ [ "USE_CXXFLAGS=true" ];
-        });
-    };
-
 in
 
 stdenv.mkDerivation rec {
+    pname = "rtorrent-ps-ch";
+    version = "0.9.8";
 
-    name = "rtorrent-${rt_version}-PS-1.1";
-    rt_version = "0.9.6";
-
-    src = fetchurl {
-        name = "rtorrent-ps-${rt_version}";
-        url = "https://bintray.com/artifact/download/pyroscope/rtorrent-ps/rtorrent-${rt_version}.tar.gz";
-        sha256 = "03jvzw9pi2mhcm913h8qg0qw9gwjqc6lhwynb1yz1y163x7w4s8y";
+    src = fetchFromGitHub {
+        owner = "rakshasa";
+        repo = "rtorrent";
+        rev = "6154d1698756e0c4842b1c13a0e56db93f1aa947";
+        hash = "sha256-4gx35bjzjUFdT2E9VGf/so7EQhaLQniUYgKQmVdwikE=";
     };
 
     commandPyroscope = fetchurl {
         name = "command_pyroscope.cc";
-        url = "https://raw.githubusercontent.com/pyroscope/rtorrent-ps/master/patches/command_pyroscope.cc";
-        sha256 = "12ky0l16jxnxhzp57izvp4aahamprgdpjfx6x79z5l6iabvawnyh";
+        url = "https://raw.githubusercontent.com/sjau/nix-expressions/master/rtorrent/0.9.8_command_pyroscope.cc";
+        sha256 = "sha256-SgYj07iRbQYv85ln0FjkZXhf6qaPCtm9vcuV8RDSAN0=";
     };
-
     uiccPyroscope = fetchurl {
         name = "ui_pyroscope.cc";
-        url = "https://raw.githubusercontent.com/pyroscope/rtorrent-ps/master/patches/ui_pyroscope.cc";
-        sha256 = "0iy6ij5sg2c2ipgzarv70zvb5vvp9q50h283w0yg1by6sfxdlvj1";
+        url = "https://raw.githubusercontent.com/sjau/nix-expressions/master/rtorrent/0.9.8_ui_pyroscope.cc";
+        sha256 = "sha256-iO2rZ5AHCH8VT5UlVA91oqYZ/TkU4yssWEh8C4lGwA8=";
     };
-
     uihPyroscope = fetchurl {
         name = "ui_pyroscope.h";
-        url = "https://raw.githubusercontent.com/pyroscope/rtorrent-ps/master/patches/ui_pyroscope.h";
-        sha256 = "1d0i1p9mrd0bca663a39a2wr3kay2qs8xrfrp43a9mvr1xpskc4h";
+        url = "https://raw.githubusercontent.com/sjau/nix-expressions/master/rtorrent/0.9.8_ui_pyroscope.h";
+        sha256 = "sha256-zHXww9GhkQVogIU8lAJAfkJ+7ByxiQd5q/5vrUnuplc=";
     };
 
-    unpackCmd = ''
-        tar xvzf "$src"
-    '';
+
+
 
     postUnpack = ''
         cp -v "$commandPyroscope" "$sourceRoot/src/command_pyroscope.cc"
         cp -v "$uiccPyroscope"    "$sourceRoot/src/ui_pyroscope.cc"
         cp -v "$uihPyroscope"     "$sourceRoot/src/ui_pyroscope.h"
-        export USE_CXXFLAGS=true
-        export CXXFLAGS+=" -fno-strict-aliasing -Wno-terminate"
-        export CXXFLAGS+=" -I${libsigcxx}/include/sigc++-2.0/"
-        export CXXFLAGS+=" -I${libsigcxx}/lib/sigc++-2.0/include/"
+        $( cd "$sourceRoot/" ; sed -i -e 's:\(AC_DEFINE(HAVE_CONFIG_H.*\):\1  AC_DEFINE(RT_HEX_VERSION, 0x000908, for CPP if checks):' configure.ac )
     '';
-
-    nativeBuildInputs = [ pkgconfig ];
-    buildInputs = [ libtool autoconf automake cppunit libtorrent-ps ncurses curl zlib openssl xmlrpc_c libsigcxx ];
-    propagatedBuildInputs = [ (python27.withPackages (pythonPackages: with pythonPackages; [
-            virtualenv
-            pip
-            setuptools
-        ]))
-    ];
 
     patchFlags = [ "-uNp1" ];
     patches = [
-        (fetchpatch {   url    = "https://raw.githubusercontent.com/pyroscope/rtorrent-ps/PS-1.1/patches/ps-event-view_all.patch";
-                        sha256 = "1z5hivf8dvc5zvkcgmwjhvhfsn4ak1mlqcn4j7bcd87wydh2an9n"; })
-        (fetchpatch {   url    = "https://raw.githubusercontent.com/pyroscope/rtorrent-ps/PS-1.1/patches/ps-fix-double-slash-319_all.patch";
-                        sha256 = "131bs1yikwc3mq19kkr4k8bz72sny1p6rym1xhgqgsn2caw15x6v"; })
-        (fetchpatch {   url    = "https://raw.githubusercontent.com/pyroscope/rtorrent-ps/PS-1.1/patches/ps-fix-sort-started-stopped-views_all.patch";
-                        sha256 = "081alibwg2va9bsnxfm5h9dji494jngxd4mjhrxp1hj2kg090xgh"; })
-        (fetchpatch {   url    = "https://raw.githubusercontent.com/pyroscope/rtorrent-ps/PS-1.1/patches/ps-fix-throttle-args_all.patch";
-                        sha256 = "03mxn7x4fp9ymcifr7gdyp9c416hbk7zkn26g5rf950v41w7bscm"; })
-        (fetchpatch {   url    = "https://raw.githubusercontent.com/pyroscope/rtorrent-ps/PS-1.1/patches/ps-handle-sighup-578_all.patch";
-                        sha256 = "1q49r6aisl00nfs3qs49z4vnwccmih2hswf85aplnmhfyl2y4ic1"; })
-        (fetchpatch {   url    = "https://raw.githubusercontent.com/pyroscope/rtorrent-ps/PS-1.1/patches/ps-info-pane-xb-sizes_all.patch";
-                        sha256 = "0glahfvqrqrx9skvb3x2icp07gv9vm9vzryylf0as3pvs1w9i9cw"; })
-        (fetchpatch {   url    = "https://raw.githubusercontent.com/pyroscope/rtorrent-ps/PS-1.1/patches/ps-issue-515_all.patch";
-                        sha256 = "05p4j4nzjjj06d7hhy2l5jpxrcigankvp7x2v97fb810khvk10ph"; })
-        (fetchpatch {   url    = "https://raw.githubusercontent.com/pyroscope/rtorrent-ps/PS-1.1/patches/ps-item-stats-human-sizes_all.patch";
-                        sha256 = "06i4mldasqm9hvins0v8sxlbs63mcvsidq8kmhkyzd34ya3czak5"; })
-        (fetchpatch {   url    = "https://raw.githubusercontent.com/pyroscope/rtorrent-ps/PS-1.1/patches/ps-ssl_verify_host_all.patch";
-                        sha256 = "1zfkajwdr8pc3kwqbys5jkqbbdn72i4p4yxl0599x1slqakv2fiy"; })
-        (fetchpatch {   url    = "https://raw.githubusercontent.com/pyroscope/rtorrent-ps/PS-1.1/patches/ps-throttle-steps_all.patch";
-                        sha256 = "0j9gq5axgy0bbl7pxshpyqgm0rrwflawvpq9pn358mc479qf5cmz"; })
-        (fetchpatch {   url    = "https://raw.githubusercontent.com/pyroscope/rtorrent-ps/PS-1.1/patches/ps-ui_pyroscope_all.patch";
-                        sha256 = "05waghxvxyk0ajxk1zi2his9m7i8wppf0d818bqbwr7l17njmhbm"; })
-        (fetchpatch {   url    = "https://raw.githubusercontent.com/pyroscope/rtorrent-ps/PS-1.1/patches/ps-view-filter-by_all.patch";
-                        sha256 = "0dxwlbi0vba0qajzwv6i5d80l8gz97zxgw2aky4nldf19ks4b5aq"; })
-        (fetchpatch {   url    = "https://raw.githubusercontent.com/pyroscope/rtorrent-ps/PS-1.1/patches/rt-base-cppunit-pkgconfig.patch";
-                        sha256 = "1909mlb7bmhmp7kk3akgrc0d07y7l2xymw3jz5p7ldr4zv2078l7"; })
-        (fetchpatch {   url    = "https://raw.githubusercontent.com/pyroscope/rtorrent-ps/PS-1.1/patches/pyroscope.patch";
-                        sha256 = "0gsgx4r4p8qjnyv0c61dgzx3xw6hh0z929pdn52jnv4pnfv4bqwd"; })
-        (fetchpatch  {  url    = "https://raw.githubusercontent.com/pyroscope/rtorrent-ps/PS-1.1/patches/ui_pyroscope.patch";
-                        sha256 = "13jxl3chqfmw4a8xl3l51x13ssp109s8ivmiq46b8w4v16n84vzg"; })
-        (fetchpatch {   url    = "https://raw.githubusercontent.com/pyroscope/rtorrent-ps/PS-1.1/patches/backport_0.9.6_algorithm_median.patch";
-                        sha256 = "1daqysa7pc57aacrdsgl9npn9vir2wnglml2l08c8aba9a3lc0yk"; })
-        (fetchpatch {   url    = "https://raw.githubusercontent.com/sjau/nix-expressions/master/customPatches/rtorrent_view_ignore.patch";
-                        sha256 = "13a3ac7dl60i1bigsn229yg3mn1iip481lky5bk6i0ki75mhc19c"; })
+        (fetchpatch {   url    = "https://raw.githubusercontent.com/sjau/nix-expressions/master/rtorrent/0.9.8_ps-import.return_all.patch";
+                        sha256 = "sha256-nIQztZ1ck+k4I67OoRJSldh36C5dlCWk3FqJOQRF2Hs="; })
+        (fetchpatch {   url    = "https://raw.githubusercontent.com/sjau/nix-expressions/master/rtorrent/0.9.8_ps-include-timestamps_all.patch";
+                        sha256 = "sha256-NFvNaX2w4djkaeymGGuKFaJBteB7toXrw/yT5jXjvIE="; })
+        (fetchpatch {   url    = "https://raw.githubusercontent.com/sjau/nix-expressions/master/rtorrent/0.9.8_ps-info-pane-is-default_all.patch";
+                        sha256 = "sha256-8SV7a6JdpZ99l9w0AI2+2z3wr7KgHMS8AaJWBTnDJlY="; })
+        (fetchpatch {   url    = "https://raw.githubusercontent.com/sjau/nix-expressions/master/rtorrent/0.9.8_ps-issue-515_all.patch/patches/ps-issue-515_all.patch";
+                        sha256 = "sha256-Aly9dPvfsUfOrrJk4tWR0xZM9IyfoKtlJ7olziUl284="; })
+        (fetchpatch {   url    = "https://raw.githubusercontent.com/sjau/nix-expressions/master/rtorrent/0.9.8_ps-item-stats-human-sizes_all.patch";
+                        sha256 = "sha256-ZarPhvJktO8nrBPhFvVmdRi9aNdoA23jhqlirRqtJBo="; })
+        (fetchpatch {   url    = "https://raw.githubusercontent.com/sjau/nix-expressions/master/rtorrent/0.9.8_ps-log_messages_all.patch";
+                        sha256 = "sha256-u3hhnJs/tiP1ftBAlF8mtgPoIHr4qN4fzVs72XX3eKk="; })
+        (fetchpatch {   url    = "https://raw.githubusercontent.com/sjau/nix-expressions/master/rtorrent/0.9.8_ps-object_std-map-serialization_all.patch";
+                        sha256 = "sha256-EnfwA1v//qmney1KuZIUmaSRTIjyGawkPXs6cRVODXk="; })
+        (fetchpatch {   url    = "https://raw.githubusercontent.com/sjau/nix-expressions/master/rtorrent/0.9.8_ps-silent-catch_all.patch";
+                        sha256 = "sha256-Y4FczoyBjCGVouRWd7KTym8hi1X/c5kNb4kKzJiRu9w="; })
+        (fetchpatch {   url    = "https://raw.githubusercontent.com/sjau/nix-expressions/master/rtorrent/0.9.8_ps-ui_pyroscope_all.patch";
+                        sha256 = "sha256-dcEq7Qn0ZL7wQgE14O7lKJ6adIQi/jC7VGD6vjt8ihc="; })
+        (fetchpatch {   url    = "https://raw.githubusercontent.com/sjau/nix-expressions/master/rtorrent/0.9.8_backport_rt_all_02-display_throttle_speed.patch";
+                        sha256 = "sha256-2zEs8UTZsyPADwZ6ZTmYVA0jOWkFEWHCr1/sWxW8ynE="; })
+        (fetchpatch {   url    = "https://raw.githubusercontent.com/sjau/nix-expressions/master/rtorrent/0.9.8_backport_rt_all_04-partially_done_and_choke_group_fix.patch";
+                        sha256 = "sha256-QpMxiaxb0nGeu9t/Fb8Vpg/OtG2UUGjCEswEgEbAV3E="; })
+        (fetchpatch {   url    = "https://raw.githubusercontent.com/sjau/nix-expressions/master/rtorrent/0.9.8_backport_rt_all_05-honor_system_file_allocate_fix.patch";
+                        sha256 = "sha256-CCf7KqYXQ8A4MbIYkSVAXMexJEiDGiKdjBCCqO5lQ00="; })
+        (fetchpatch {   url    = "https://raw.githubusercontent.com/sjau/nix-expressions/master/rtorrent/0.9.8_backport_rt_all_08-info_pane_xb_sizes.patch";
+                        sha256 = "sha256-0o8vGL9O/tMTAmiUXaBgs4Ntf0ljOSBsSA8AHO7ufkw="; })
+        (fetchpatch {   url    = "https://raw.githubusercontent.com/sjau/nix-expressions/master/rtorrent/0.9.8_backport_rt_all_09-inotify_mod.patch";
+                        sha256 = "sha256-dI13vUlkWwBhsIeF+kW9DO4vFGotIrFvxR6nJCrq1gE="; })
+        (fetchpatch {   url    = "https://raw.githubusercontent.com/sjau/nix-expressions/master/rtorrent/0.9.8_backport_rt_all_80-ps-dl-ui-find.patch";
+                        sha256 = "sha256-UDvvBik+IlKfvmvEnRznrXUDjfLhpux30hD59POHI5I="; })
+        (fetchpatch {   url    = "https://raw.githubusercontent.com/sjau/nix-expressions/master/rtorrent/0.9.8_pyroscope_all.patch";
+                        sha256 = "sha256-jeNFtrOXbCtFse0mkT6A0PA++n8tGAa2txKjSzLpTz8="; })
+        (fetchpatch {   url    = "https://raw.githubusercontent.com/sjau/nix-expressions/master/rtorrent/0.9.8_ui_pyroscope_all.patch";
+                        sha256 = "sha256-NAIwfNpDTzSI9p6uIA7diDjjCS5IzHmZiJJwEnbB+WE="; })
+
+        (fetchpatch {   url    = "https://raw.githubusercontent.com/sjau/nix-expressions/master/rtorrent/0.9.8_rtorrent_view_ignore.patch";
+                        sha256 = "sha256-L9qxMKaokca6yszZZDhtvF38gaAQaWJfDbtrJvgxQB4="; })
     ];
 
-    preConfigure = "./autogen.sh";
+    passthru = {
+        inherit libtorrent;
+    };
 
-    configureFlags = [ "--with-xmlrpc-c" "--with-posix-fallocate" ];
+    nativeBuildInputs = [
+        autoconf-archive
+        autoreconfHook
+        pkg-config
+    ];
+
+    buildInputs = [
+        cppunit
+        curl
+        libsigcxx
+        libtool
+        libtorrent
+        ncurses
+        openssl
+        xmlrpc_c
+        zlib
+    ];
+
+    configureFlags = [
+        "--with-xmlrpc-c"
+        "--with-posix-fallocate"
+    ];
+
+    enableParallelBuilding = true;
 
     postInstall = ''
         mkdir -p $out/share/man/man1 $out/share/doc/rtorrent
-        # mv doc/old/rtorrent.1 $out/share/man/man1/rtorrent.1
+        mv doc/old/rtorrent.1 $out/share/man/man1/rtorrent.1
         mv doc/rtorrent.rc $out/share/doc/rtorrent/rtorrent.rc
     '';
 
-    meta = with stdenv.lib; {
-        inherit (src.meta) homepage;
+    meta = with lib; {
+        homepage = "https://rakshasa.github.io/rtorrent/";
         description = "An ncurses client for libtorrent, ideal for use with screen, tmux, or dtach";
-
+        license = licenses.gpl2Plus;
+        maintainers = with maintainers; [ ebzzry codyopel ];
         platforms = platforms.unix;
-        maintainers = with maintainers; [ hyper_ch ];
     };
 }

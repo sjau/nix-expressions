@@ -1,42 +1,57 @@
-{ stdenv, fetchurl, fetchpatch, pkgconfig, libtool, autoconf, automake, cppunit, openssl, libsigcxx, zlib }:
+{ lib
+, stdenv
+, fetchFromGitHub
+, fetchpatch
+, autoconf-archive
+, autoreconfHook
+, cppunit
+, libsigcxx
+, openssl
+, pkg-config
+, zlib
+}:
 
 stdenv.mkDerivation rec {
-    name = "libtorrent-${lt_version}";
-    lt_version = "0.13.6";
+    pname = "rakshasa-libtorrent";
+    version = "0.13.8";
 
-    src = fetchurl {
-        name = "libtorrent-ps-${lt_version}";
-        url = "https://bintray.com/artifact/download/pyroscope/rtorrent-ps/libtorrent-${lt_version}.tar.gz";
-        sha256 = "012s1nwcvz5m5r4d2z9klgy2n34kpgn9kgwgzxm97zgdjs6a0f18";
+    src = fetchFromGitHub {
+        owner = "rakshasa";
+        repo = "libtorrent";
+        rev = "756f70010779927dc0691e1e722ed433d5d295e1";
+        hash = "sha256-uSDzOU53i0aKm0C27In+zLAAHeKMu5av90DoN5YyvsA=";
     };
 
-    unpackCmd = ''
-        tar xvzf "$src"
-    '';
+    nativeBuildInputs = [
+        autoconf-archive
+        autoreconfHook
+        pkg-config
+    ];
 
-    nativeBuildInputs = [ pkgconfig ];
-    buildInputs = [ libtool autoconf automake cppunit openssl libsigcxx zlib ];
+    buildInputs = [
+        cppunit
+        libsigcxx
+        openssl
+        zlib
+    ];
 
     patchFlags = [ "-uNp1" ];
     patches = [
-        (fetchpatch {   url    = "https://raw.githubusercontent.com/pyroscope/rtorrent-ps/PS-1.1/patches/lt-ps-honor_system_file_allocate_all.patch";
-                        sha256 = "1dd5zrm7qqkbx2rayfahsil7scca8lqzvq432c29vi97ddgh6f2m"; })
-        (fetchpatch {   url    = "https://raw.githubusercontent.com/pyroscope/rtorrent-ps/PS-1.1/patches/lt-ps-log_open_file-reopen_all.patch";
-                        sha256 = "1g0sx9ywdgcn4zw6kwk24px4k82hjqfinwn0sz0hf68q1ad5qlai"; })
-        (fetchpatch {   url    = "https://raw.githubusercontent.com/pyroscope/rtorrent-ps/PS-1.1/patches/lt-open-ssl-1.1.patch";
-                        sha256 = "1wm9kr2y874hrdyc4wizp8bv4nwqy9yvirvpfbisw1qknvflzrsa"; })
-        (fetchpatch {   url    = "https://raw.githubusercontent.com/pyroscope/rtorrent-ps/PS-1.1/patches/lt-base-cppunit-pkgconfig.patch";
-                        sha256 = "17z0nrhiiylzh73f1rzmbx7kbmc8d2vp3bwad5i3cgfyzwk0z5ya"; })
+        (fetchpatch {   url    = "https://raw.githubusercontent.com/sjau/nix-expressions/master/rtorrent/0.9.8_lt-ps_all_02-better-bencode-errors_all.patch";
+                        sha256 = "sha256-YHJjR2PlZ06SPPQWtDcAKZ1S5bhGjjvfMGEjVwjXHg8="; })
+        (fetchpatch {   url    = "https://raw.githubusercontent.com/sjau/nix-expressions/master/rtorrent/0.9.8_backport_lt_all_01-partially_done_and_choke_group_fix.patch";
+                        sha256 = "sha256-/LUrscRCz2/cfGKeR9YmqiD0bCQcX0QOaLLVS7iNun0="; })
+        (fetchpatch {   url    = "https://raw.githubusercontent.com/sjau/nix-expressions/master/rtorrent/0.9.8_backport_lt_all_02-honor_system_file_allocate_fix.patch";
+                        sha256 = "sha256-/9bWRPL18Rsi4q7c9AePc710Y0KeAKz8iSJT7ufzZvg="; })
     ];
 
-    preConfigure = "./autogen.sh";
+    enableParallelBuilding = true;
 
-    meta = with stdenv.lib; {
-        homepage = "http://rtorrent.net/downloads/";
+    meta = with lib; {
+        homepage = "https://github.com/rakshasa/libtorrent";
         description = "A BitTorrent library written in C++ for *nix, with focus on high performance and good code";
-
-        platforms = platforms.linux;
-        maintainers = with maintainers; [ hyper_ch ];
+        license = licenses.gpl2Plus;
+        maintainers = with maintainers; [ ebzzry codyopel ];
+        platforms = platforms.unix;
     };
 }
-

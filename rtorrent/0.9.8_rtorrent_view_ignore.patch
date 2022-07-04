@@ -1,0 +1,11 @@
+--- old/src/ui/element_download_list.cc 2022-07-02 13:16:31.732483748 +0200
++++ new/src/ui/element_download_list.cc 2022-07-02 13:17:29.950021876 +0200
+@@ -65,7 +65,7 @@
+
+   m_bindings['\x13'] = std::bind(&ElementDownloadList::receive_command, this, "d.start=");
+   m_bindings['\x04'] = std::bind(&ElementDownloadList::receive_command, this, "branch=d.state=,d.stop=,d.erase=");
+-  m_bindings['\x0B'] = std::bind(&ElementDownloadList::receive_command, this, "d.ignore_commands.set=1; d.stop=; d.close=");
++  m_bindings['\x0B'] = std::bind(&ElementDownloadList::receive_command, this, "d.stop=; d.close=");
+   m_bindings['\x12'] = std::bind(&ElementDownloadList::receive_command, this, "d.complete.set=0; d.check_hash=");
+   m_bindings['\x05'] = std::bind(&ElementDownloadList::receive_command, this,
+                                       "f.multicall=,f.set_create_queued=0,f.set_resize_queued=0; print=\"Queued create/resize of files in torrent.\"");
