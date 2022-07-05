@@ -21,8 +21,10 @@
 # Main Repo:        https://github.com/chros73/rtorrent-ps-ch/
 # Docs:             https://github.com/chros73/rtorrent-ps-ch/blob/master/README.rst
 # Compiling Guide:  https://github.com/chros73/rtorrent-ps-ch/blob/master/docs/DebianInstallFromSourceTheEasyWay.rst
-# The python packages are needed for PyroScope's pyrocore installation
-# For finishing the user inntallation do the PyroScope installation and then follow further the installation guide
+
+# While rtorrent-ps-ch doesn't directly require the python packages during compilation, they are later needed on the
+# system for starting/running rtorrent-ps-ch.
+# Check the installation guide for the PyroScope setup.
 
 # CUSTOM VIEW IGNORE FILTER PATCH
 # This applies a patch to make an easy filter torrents to only appear in view1 (main) or view2 (name).
