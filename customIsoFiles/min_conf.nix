@@ -15,7 +15,6 @@
 
     # Use the GRUB 2 boot loader.
     boot.loader.grub.enable = true;
-    boot.loader.grub.version = 2;
     boot.loader.grub.zfsSupport = true;
     boot.loader.grub.device = "/dev/sda"; # or "nodev" for efi only
 
@@ -31,14 +30,26 @@
     };
 
     # Select internationalisation properties.
+    # Select internationalisation properties.
     console.font = "Lat2-Terminus16";
     console.keyMap = "sg-latin1";
     i18n.defaultLocale = "en_US.UTF-8";
+    i18n.supportedLocales = [ "all" ];
 
     # Enable the OpenSSH daemon.
     services.openssh = {
         enable = true;
-        permitRootLogin = "yes";
+        hostKeys = [
+            {   path = "/data/ssh/ssh_host_ed25519_key";
+                type = "ed25519"; }
+            {   path = "/data/ssh/ssh_host_rsa_key";
+                type = "rsa";
+                bits = 4096; }
+        ];
+        settings = {
+            PermitRootLogin = "yes";
+        };
+        ports = [ 22 ];
     };
 
     # Enable ntp or rather timesyncd
@@ -50,9 +61,6 @@
     # Time.
     time.timeZone = "Europe/Zurich";
 
-    # Add the NixOS Manual on virtual console 8
-    services.nixosManual.showManual = true;
-
     # Setup nano
     programs.nano.nanorc = ''
         set nowrap
@@ -63,16 +71,17 @@
     '';
 
     # The NixOS release to be compatible with for stateful data such as databases.
-    system.stateVersion = "19.03";
+    system.stateVersion = "24.05";
 
     nixpkgs.config.allowUnfree = true;
 
     # List packages installed in system profile.
     environment.systemPackages = with pkgs; [
-        cryptsetup
         curl
         htop
         tmux
         mc
     ];
 }
+
+
