@@ -19,7 +19,7 @@
     boot.loader.grub.device = "/dev/sda"; # or "nodev" for efi only
 
     # Trust hydra. Needed for one-click installations.
-    nix.trustedBinaryCaches = [ "http://hydra.nixos.org" ];
+    nix.settings.trusted-substituters = [ "http://hydra.nixos.org" ];
 
     # Setup networking
     networking = {
