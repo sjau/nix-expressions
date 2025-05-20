@@ -1,14 +1,19 @@
-{ stdenv, fetchFromGitHub, zfs }:
+{
+    lib,
+    stdenv,
+    fetchFromGitHub,
+    zfs
+}:
 
-stdenv.mkDerivation {
-  name = "easysnap";
-  version = "2020-05-17";
+stdenv.mkDerivation rec {
+  pname = "easysnap";
+  version = "2025-05-20";
 
   src = fetchFromGitHub {
     owner = "sjau";
     repo = "easysnap";
-    rev = "aa84cc24463b9907da457309d7a07924aad67a00";
-    sha256 = "1rd4lrlk86ghxmjc037qndc7fxcp2v8rfvx7zn25n3lllmkchyy5";
+    rev = "f9b2b65e5469f295bdd9515d464ce709c969c95a";
+    sha256 = "sha256-+1zXypl3fcF2Y/VnLBz+T8Mf94Eu7bqnqoHEjIUpy+U=";
   };
 
   installPhase = ''
@@ -21,11 +26,12 @@ stdenv.mkDerivation {
     done
   '';
 
-  meta = with stdenv; {
-    homepage    = https://github.com/sjau/easysnap;
+  meta = with lib; {
     description = "Customizable ZFS Snapshotting tool with zfs send/recv pulling";
+    homepage    = "https://github.com/sjau/easysnap";
     license     = licenses.gpl3;
     maintainers = with maintainers; [ "sjau" ];
   };
 
 }
+
