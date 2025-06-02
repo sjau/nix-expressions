@@ -4,5 +4,5 @@ writeScriptBin "getMusic" ''
     #!${stdenv.shell}
 
     # Small script to download
-    cd "/home/hyper/Syncthing/Music" && ${yt-dlp}/bin/yt-dlp -x "$1"
+    cd "/home/hyper/Syncthing/Music" && ${yt-dlp}/bin/yt-dlp -t mp3 "$1"
 ''
